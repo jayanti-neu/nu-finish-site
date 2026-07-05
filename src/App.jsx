@@ -115,12 +115,12 @@ const JOB_STATUSES = [
 ];
 const STATUS_COLORS = [
   "bg-gray-400",
-  "bg-blue-400",
-  "bg-yellow-400",
-  "bg-orange-400",
-  "bg-purple-400",
-  "bg-cyan-500",
-  "bg-green-500",
+  "bg-gray-500",
+  "bg-gray-600",
+  "bg-gray-700",
+  "bg-brand-ink",
+  "bg-brand-hover",
+  "bg-brand",
 ];
 const INIT_JOBS = [
   {
@@ -155,7 +155,7 @@ const INIT_JOBS = [
 // ── SHARED ─────────────────────────────────────────────────────
 function Badge({ children }) {
   return (
-    <span className="inline-block bg-brand/15 text-brand-ink text-xs font-semibold px-3 py-1 rounded-full mb-3">
+    <span className="inline-block bg-brand text-black text-xs font-semibold px-3 py-1 rounded-full mb-3">
       {children}
     </span>
   );
@@ -277,15 +277,15 @@ function Home({ setPage }) {
       {/* Hero */}
       <div className="relative bg-black text-white overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-bottom"
+          className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: "url('/race-car.jpg')" }}
           aria-hidden="true"
         />
         <div
-          className="absolute inset-0 bg-gradient-to-r from-black via-black/55 to-black/10"
+          className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-black/25"
           aria-hidden="true"
         />
-        <div className="relative max-w-5xl mx-auto px-6 py-24 md:py-40">
+        <div className="relative max-w-5xl mx-auto px-6 py-24 md:py-32">
           <Badge>Serving Garrett County Since 1986</Badge>
           <h1 className="text-4xl md:text-5xl font-black leading-tight mb-3">
             Trusted Collision Repair
@@ -414,67 +414,6 @@ function Home({ setPage }) {
                 <p className="text-gray-400 text-xs mt-3">— {attr}</p>
               </div>
             ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Car Tracker Coming Soon */}
-      <div className="bg-gray-800 py-16 px-6">
-        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-10 items-center">
-          <div>
-            <span className="inline-block bg-brand text-black text-xs font-black px-3 py-1 rounded-full mb-4 uppercase tracking-wide">
-              Coming Soon
-            </span>
-            <h2 className="text-3xl font-black text-white mb-3">
-              Track Your Vehicle Online
-            </h2>
-            <p className="text-gray-400 mb-4 text-sm">
-              Soon you'll be able to get automatic SMS updates on your repair —
-              no phone call needed. We'll text you at every step of the process.
-            </p>
-            <div className="bg-white/10 border border-white/20 rounded-xl px-5 py-4 max-w-sm">
-              <p className="text-gray-400 text-xs mb-2 font-semibold uppercase">
-                Get notified when it launches
-              </p>
-              <div className="flex gap-2">
-                <input
-                  className="flex-1 bg-white/10 border border-white/20 text-white placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:outline-none"
-                  placeholder="Your phone number"
-                />
-                <button className="bg-brand text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-brand-hover transition">
-                  Notify Me
-                </button>
-              </div>
-            </div>
-          </div>
-          {/* SMS mockup */}
-          <div className="bg-gray-900 rounded-3xl p-4 shadow-xl max-w-xs mx-auto w-full border-4 border-gray-700">
-            <div className="flex items-center gap-2 mb-3 px-1">
-              <div className="w-2 h-2 rounded-full bg-gray-600" />
-              <p className="text-gray-400 text-xs flex-1 text-center">
-                Nu Finish Collision Center
-              </p>
-              <div className="w-2 h-2 rounded-full bg-gray-600" />
-            </div>
-            <div className="space-y-2">
-              {[
-                {
-                  txt: "Hi Maria! Your 2019 Honda Civic is now IN PAINT. Est. ready: Feb 24. We'll text you when it's done!",
-                  time: "9:14 AM",
-                },
-                {
-                  txt: "Update: Your car has passed Final Inspection and is READY FOR PICKUP! Call us at (301) 334-4727. Thanks for choosing Nu Finish!",
-                  time: "2:31 PM",
-                },
-              ].map((m, i) => (
-                <div key={i} className="flex flex-col items-start">
-                  <div className="bg-white text-gray-800 rounded-2xl rounded-tl-sm px-3 py-2 max-w-xs">
-                    <p className="text-xs leading-relaxed">{m.txt}</p>
-                  </div>
-                  <p className="text-gray-500 text-xs mt-1 ml-1">{m.time}</p>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>
@@ -1002,7 +941,7 @@ function Admin() {
               Save Note
             </button>
           </div>
-          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-sm text-yellow-800">
+          <div className="bg-gray-100 border border-gray-200 rounded-xl p-3 text-sm text-gray-600">
             📱 In the real app, saving will automatically SMS{" "}
             <strong>{selected.phone}</strong> with the update.
           </div>
