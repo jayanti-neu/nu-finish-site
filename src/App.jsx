@@ -1,47 +1,54 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import {
+  Wrench,
+  SprayCan,
+  Sparkles,
+  CarFront,
+  Ruler,
+  ShieldCheck,
+  Warehouse,
+  Lock,
+  Award,
+  Leaf,
+  MapPin,
+  Phone,
+  Mail,
+  Clock,
+  User,
+} from "lucide-react";
 
 const NAV = ["Home", "Services", "About", "Contact", "Admin"];
 
 const SERVICES = [
   {
-    icon: "🔧",
+    Icon: Wrench,
     title: "Collision Repair",
     desc: "Structural and cosmetic restoration using computerized measuring systems to bring your vehicle back to factory tolerances.",
   },
   {
-    icon: "🎨",
+    Icon: SprayCan,
     title: "Paint & Refinishing",
-    desc: "PPG Certified facility with a lifetime nationwide paint warranty. Our color-match system guarantees a seamless finish.",
+    desc: "Valspar and DeBeer certified refinishing with a 1-year paint warranty. Our color-match system guarantees a seamless finish.",
   },
   {
-    icon: "✨",
+    Icon: Sparkles,
     title: "Paintless Dent Repair",
     desc: "Quick turnaround for minor dings and dents — no repainting needed.",
   },
   {
-    icon: "🪟",
+    Icon: CarFront,
     title: "Glass Replacement",
     desc: "OEM-grade windshields and calibrations for all makes and models.",
   },
   {
-    icon: "📐",
+    Icon: Ruler,
     title: "Frame & Unibody Alignment",
     desc: "Our $30K laser measuring system restores structural integrity to exact manufacturer specifications.",
   },
   {
-    icon: "🛡️",
+    Icon: ShieldCheck,
     title: "Insurance Claim Handling",
     desc: "We handle direct billing to all major carriers — you don't have to deal with the paperwork.",
-  },
-  {
-    icon: "🔍",
-    title: "Free Estimates",
-    desc: "Stop in anytime Monday–Friday for a free, no-obligation estimate on any repair.",
-  },
-  {
-    icon: "🚿",
-    title: "Detailing & Buffing",
-    desc: "Post-repair cleanup or standalone detailing service to leave your vehicle looking its best.",
   },
 ];
 
@@ -64,24 +71,24 @@ const STEPS = [
   {
     n: "04",
     title: "Expert Repair",
-    desc: "Our I-CAR certified technicians get to work using PPG products and computerized equipment.",
+    desc: "Our I-CAR certified technicians get to work using Valspar and DeBeer products and computerized equipment.",
   },
   {
     n: "05",
     title: "Pick It Up",
-    desc: "Drive away with confidence — all paint is backed by a lifetime warranty.",
+    desc: "Drive away with confidence — all paint is backed by a 1-year warranty.",
   },
 ];
 
 const TIMELINE = [
   { year: "1986", text: "Body shop founded in Oakland by Steve Davis." },
   {
-    year: "1990s",
+    year: "1997",
     text: "Relocated to 1470 Maryland Hwy and expanded floor space.",
   },
   {
     year: "2000s",
-    text: "Earned PPG Certified Refinish Facility status with lifetime paint warranty.",
+    text: "Earned certified refinish-facility status with a nationwide paint warranty.",
   },
   {
     year: "2010s",
@@ -89,7 +96,7 @@ const TIMELINE = [
   },
   {
     year: "2020",
-    text: 'Ownership transitioned to long-time team leaders Mike Dawson & John "Grover" Groves, retaining all staff.',
+    text: 'Long-time team leader John "Grover" Groves stepped into shop leadership, retaining all staff.',
   },
   {
     year: "2025",
@@ -148,7 +155,7 @@ const INIT_JOBS = [
 // ── SHARED ─────────────────────────────────────────────────────
 function Badge({ children }) {
   return (
-    <span className="inline-block bg-red-100 text-red-700 text-xs font-semibold px-3 py-1 rounded-full mb-3">
+    <span className="inline-block bg-brand/15 text-brand-ink text-xs font-semibold px-3 py-1 rounded-full mb-3">
       {children}
     </span>
   );
@@ -175,15 +182,15 @@ function ProgressBar({ statusIdx, color }) {
     </div>
   );
 }
-function EstimateBtn({ setPage }) {
+function EstimateBtn() {
   return (
     <div className="text-center mt-10">
-      <button
-        onClick={() => setPage("Contact")}
-        className="bg-red-700 text-white font-bold px-8 py-3 rounded-lg hover:bg-red-800 transition"
+      <a
+        href="tel:3013344727"
+        className="inline-block bg-brand text-black font-bold px-8 py-3 rounded-lg hover:bg-brand-hover transition"
       >
-        📋 Get a Free Estimate
-      </button>
+        📞 Call (301) 334-4727
+      </a>
     </div>
   );
 }
@@ -192,22 +199,25 @@ function EstimateBtn({ setPage }) {
 function Navbar({ page, setPage }) {
   const [open, setOpen] = useState(false);
   return (
-    <nav className="bg-white shadow-sm sticky top-0 z-50">
+    <nav className="bg-black shadow-sm sticky top-0 z-50">
       <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-        <div onClick={() => setPage("Home")} className="cursor-pointer">
-          <span className="text-red-700 font-black text-xl tracking-tight">
-            NU FINISH
-          </span>
-          <span className="text-gray-400 text-sm ml-2 hidden sm:inline">
-            Auto Collision LLC
-          </span>
-        </div>
+        <button
+          onClick={() => setPage("Home")}
+          aria-label="Nu Finish Collision Center — home"
+          className="cursor-pointer"
+        >
+          <img
+            src="/nufinish-wordmark.png"
+            alt="Nu Finish Collision Center"
+            className="h-9 w-auto"
+          />
+        </button>
         <div className="hidden md:flex items-center gap-1">
           {NAV.map((n) => (
             <button
               key={n}
               onClick={() => setPage(n)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition ${page === n ? "bg-red-700 text-white" : "text-gray-600 hover:bg-gray-100"} ${n === "Admin" ? "border border-gray-200" : ""}`}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition ${page === n ? "bg-brand text-black" : "text-gray-300 hover:bg-white/10"} ${n === "Admin" ? "border border-white/20" : ""}`}
             >
               {n === "Admin" ? "🔧 Admin" : n}
             </button>
@@ -215,13 +225,15 @@ function Navbar({ page, setPage }) {
         </div>
         <button
           onClick={() => setOpen(!open)}
-          className="md:hidden text-gray-600 text-2xl"
+          aria-label="Toggle navigation menu"
+          aria-expanded={open}
+          className="md:hidden text-white text-2xl"
         >
           ☰
         </button>
       </div>
       {open && (
-        <div className="md:hidden bg-white border-t border-gray-100 px-4 pb-3 space-y-1">
+        <div className="md:hidden bg-black border-t border-white/10 px-4 pb-3 space-y-1">
           {NAV.map((n) => (
             <button
               key={n}
@@ -229,7 +241,7 @@ function Navbar({ page, setPage }) {
                 setPage(n);
                 setOpen(false);
               }}
-              className={`block w-full text-left px-4 py-2 rounded-lg text-sm font-medium ${page === n ? "bg-red-700 text-white" : "text-gray-600"}`}
+              className={`block w-full text-left px-4 py-2 rounded-lg text-sm font-medium ${page === n ? "bg-brand text-black" : "text-gray-300"}`}
             >
               {n === "Admin" ? "🔧 Admin" : n}
             </button>
@@ -243,7 +255,7 @@ function Navbar({ page, setPage }) {
 // ── HOME ───────────────────────────────────────────────────────
 function FloatingCallButton() {
   const [visible, setVisible] = useState(false);
-  useState(() => {
+  useEffect(() => {
     const onScroll = () => setVisible(window.scrollY > 400);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
@@ -252,7 +264,7 @@ function FloatingCallButton() {
   return (
     <a
       href="tel:3013344727"
-      className="fixed bottom-5 right-5 bg-red-600 text-white font-bold px-5 py-3 rounded-full shadow-lg hover:bg-red-700 transition z-50 flex items-center gap-2 md:hidden"
+      className="fixed bottom-5 right-5 bg-brand text-black font-bold px-5 py-3 rounded-full shadow-lg hover:bg-brand-hover transition z-50 flex items-center gap-2 md:hidden"
     >
       📞 Call Now
     </a>
@@ -263,49 +275,58 @@ function Home({ setPage }) {
   return (
     <div>
       {/* Hero */}
-      <div className="bg-gray-900 text-white">
-        <div className="max-w-5xl mx-auto px-6 py-20 md:py-28">
+      <div className="relative bg-black text-white overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-bottom"
+          style={{ backgroundImage: "url('/race-car.jpg')" }}
+          aria-hidden="true"
+        />
+        <div
+          className="absolute inset-0 bg-gradient-to-r from-black via-black/55 to-black/10"
+          aria-hidden="true"
+        />
+        <div className="relative max-w-5xl mx-auto px-6 py-24 md:py-40">
           <Badge>Serving Garrett County Since 1986</Badge>
           <h1 className="text-4xl md:text-5xl font-black leading-tight mb-3">
             Trusted Collision Repair
             <br />
-            <span className="text-red-500">in Garrett County Since 1986</span>
+            <span className="text-brand">in Garrett County Since 1986</span>
           </h1>
           <p className="text-gray-300 max-w-md mb-8 text-lg">
-            Family-run, certified, and committed to a lifetime finish.
+            Family-run, certified, and committed to a quality finish.
           </p>
           <div className="flex flex-wrap gap-3">
-            <button
-              onClick={() => setPage("Contact")}
-              className="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-lg transition text-lg"
-            >
-              📋 Get a Free Estimate
-            </button>
             <a
               href="tel:3013344727"
+              className="bg-brand hover:bg-brand-hover text-black font-bold px-6 py-3 rounded-lg transition text-lg"
+            >
+              📞 Call (301) 334-4727
+            </a>
+            <button
+              onClick={() => setPage("Contact")}
               className="bg-white text-gray-900 font-bold px-6 py-3 rounded-lg hover:bg-gray-100 transition text-lg"
             >
-              📞 Call Us Now
-            </a>
+              📍 Visit the Shop
+            </button>
           </div>
-          <p className="text-gray-500 text-xs mt-4">
+          <p className="text-gray-400 text-xs mt-4">
             Mon–Fri 9am–5pm · Walk-ins welcome · (301) 334-4727
           </p>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="bg-red-700 text-white">
+      <div className="bg-brand text-black">
         <div className="max-w-5xl mx-auto px-6 py-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           {[
             ["39+", "Years in Business"],
             ["22", "Bay Facility"],
-            ["Lifetime", "Paint Warranty"],
-            ["Free", "Estimates"],
+            ["1-Year", "Paint Warranty"],
+            ["Insurance", "Direct Billing"],
           ].map(([val, lbl]) => (
             <div key={lbl}>
               <p className="text-2xl font-black">{val}</p>
-              <p className="text-red-200 text-sm">{lbl}</p>
+              <p className="text-gray-800 text-sm">{lbl}</p>
             </div>
           ))}
         </div>
@@ -325,7 +346,7 @@ function Home({ setPage }) {
                 key={s.title}
                 className="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition"
               >
-                <span className="text-3xl">{s.icon}</span>
+                <s.Icon className="w-8 h-8 text-brand-ink" strokeWidth={1.75} />
                 <h3 className="font-bold text-gray-800 mt-2 mb-1 text-sm">
                   {s.title}
                 </h3>
@@ -336,7 +357,7 @@ function Home({ setPage }) {
           <div className="text-center">
             <button
               onClick={() => setPage("Services")}
-              className="text-red-700 font-semibold text-sm hover:underline"
+              className="text-brand-ink font-semibold text-sm hover:underline"
             >
               View all services →
             </button>
@@ -354,18 +375,20 @@ function Home({ setPage }) {
                 key={s.n}
                 className="flex-1 border border-gray-100 rounded-xl p-5 bg-gray-50"
               >
-                <span className="text-red-600 font-black text-2xl">{s.n}</span>
+                <span className="text-brand-ink font-black text-2xl">
+                  {s.n}
+                </span>
                 <h4 className="font-bold text-gray-800 mt-1 mb-1">{s.title}</h4>
                 <p className="text-gray-500 text-xs">{s.desc}</p>
               </div>
             ))}
           </div>
-          <EstimateBtn setPage={setPage} />
+          <EstimateBtn />
         </div>
       </div>
 
       {/* Testimonials */}
-      <div className="bg-gray-900 py-16 px-6">
+      <div className="bg-black py-16 px-6">
         <div className="max-w-5xl mx-auto">
           <SectionTitle badge="What Customers Say" title="Testimonials" />
           <div className="grid md:grid-cols-2 gap-6">
@@ -399,7 +422,7 @@ function Home({ setPage }) {
       <div className="bg-gray-800 py-16 px-6">
         <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-10 items-center">
           <div>
-            <span className="inline-block bg-yellow-400 text-gray-900 text-xs font-black px-3 py-1 rounded-full mb-4 uppercase tracking-wide">
+            <span className="inline-block bg-brand text-black text-xs font-black px-3 py-1 rounded-full mb-4 uppercase tracking-wide">
               Coming Soon
             </span>
             <h2 className="text-3xl font-black text-white mb-3">
@@ -418,7 +441,7 @@ function Home({ setPage }) {
                   className="flex-1 bg-white/10 border border-white/20 text-white placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:outline-none"
                   placeholder="Your phone number"
                 />
-                <button className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition">
+                <button className="bg-brand text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-brand-hover transition">
                   Notify Me
                 </button>
               </div>
@@ -429,7 +452,7 @@ function Home({ setPage }) {
             <div className="flex items-center gap-2 mb-3 px-1">
               <div className="w-2 h-2 rounded-full bg-gray-600" />
               <p className="text-gray-400 text-xs flex-1 text-center">
-                Nu Finish Collision
+                Nu Finish Collision Center
               </p>
               <div className="w-2 h-2 rounded-full bg-gray-600" />
             </div>
@@ -467,19 +490,22 @@ function Home({ setPage }) {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
             {[
               {
-                icon: "📍",
+                Icon: MapPin,
                 label: "Address",
                 val: "1470 Maryland Hwy\nOakland, MD 21550",
               },
-              { icon: "📞", label: "Phone", val: "(301) 334-4727" },
+              { Icon: Phone, label: "Phone", val: "(301) 334-4727" },
               {
-                icon: "🕐",
+                Icon: Clock,
                 label: "Hours",
                 val: "Mon–Fri: 9am–5pm\nSat–Sun: Closed",
               },
-            ].map(({ icon, label, val }) => (
+            ].map(({ Icon, label, val }) => (
               <div key={label} className="bg-gray-50 rounded-xl p-5">
-                <span className="text-2xl">{icon}</span>
+                <Icon
+                  className="w-6 h-6 text-brand-ink mx-auto"
+                  strokeWidth={1.75}
+                />
                 <p className="font-bold text-gray-800 mt-2 mb-1 text-sm">
                   {label}
                 </p>
@@ -489,12 +515,12 @@ function Home({ setPage }) {
               </div>
             ))}
           </div>
-          <button
-            onClick={() => setPage("Contact")}
-            className="mt-8 bg-red-700 text-white font-bold px-8 py-3 rounded-lg hover:bg-red-800 transition"
+          <a
+            href="tel:3013344727"
+            className="inline-block mt-8 bg-brand text-black font-bold px-8 py-3 rounded-lg hover:bg-brand-hover transition"
           >
-            Request a Free Estimate
-          </button>
+            📞 Call (301) 334-4727
+          </a>
         </div>
       </div>
 
@@ -504,13 +530,13 @@ function Home({ setPage }) {
 }
 
 // ── SERVICES ───────────────────────────────────────────────────
-function Services({ setPage }) {
+function Services() {
   return (
     <div className="max-w-5xl mx-auto px-6 py-16">
       <SectionTitle
         badge="Our Services"
         title="Everything We Offer"
-        sub="PPG certified, I-CAR trained, and equipped with a $30K laser frame system."
+        sub="Valspar & DeBeer certified, I-CAR trained, and equipped with a $30K laser frame system."
       />
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
         {SERVICES.map((s) => (
@@ -518,7 +544,7 @@ function Services({ setPage }) {
             key={s.title}
             className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition"
           >
-            <span className="text-4xl">{s.icon}</span>
+            <s.Icon className="w-10 h-10 text-brand-ink" strokeWidth={1.75} />
             <h3 className="font-bold text-gray-800 mt-3 mb-2 text-lg">
               {s.title}
             </h3>
@@ -526,47 +552,54 @@ function Services({ setPage }) {
           </div>
         ))}
       </div>
-      <div className="mt-12 bg-red-50 border border-red-100 rounded-2xl p-8 text-center">
+      <div className="mt-12 bg-brand/10 border border-brand/30 rounded-2xl p-8 text-center">
         <h3 className="text-xl font-black text-gray-900 mb-2">
           Not sure what you need?
         </h3>
         <p className="text-gray-500 text-sm mb-4">
-          Stop in for a free estimate — no appointment needed Monday through
-          Friday.
+          Give us a call and we'll point you in the right direction — no
+          appointment needed Monday through Friday.
         </p>
         <a
           href="tel:3013344727"
-          className="bg-red-700 text-white font-bold px-6 py-3 rounded-lg hover:bg-red-800 transition inline-block"
+          className="bg-brand text-black font-bold px-6 py-3 rounded-lg hover:bg-brand-hover transition inline-block"
         >
           📞 (301) 334-4727
         </a>
       </div>
-      <EstimateBtn setPage={setPage} />
     </div>
   );
 }
 
 // ── ABOUT ──────────────────────────────────────────────────────
-function About({ setPage }) {
+function About() {
   return (
     <div className="max-w-5xl mx-auto px-6 py-16">
       <SectionTitle badge="Our Story" title="About Nu Finish" />
+
+      <div className="flex justify-center mb-12">
+        <img
+          src="/nufinish-logo.png"
+          alt="Nu Finish Collision Center logo"
+          className="w-40 h-40 md:w-48 md:h-48 object-contain"
+        />
+      </div>
 
       {/* Narrative */}
       <div className="grid md:grid-cols-2 gap-10 mb-14">
         <div className="space-y-4 text-gray-600 text-sm leading-relaxed">
           <p>
-            Nu Finish Auto Collision LLC has been serving Oakland, Maryland and
+            Nu Finish Collision Center has been serving Oakland, Maryland and
             Garrett County since <strong>1986</strong>, when founder Steve Davis
             opened the shop with a simple commitment: do the job right. Over the
             decades, the business relocated to its current 1470 Maryland Hwy
-            facility, earned <strong>PPG Certified Refinish Facility</strong>{" "}
-            status, and grew into the largest collision center in Garrett
-            County.
+            facility, became a{" "}
+            <strong>Valspar &amp; DeBeer Certified Refinish Facility</strong>,
+            and grew into the largest collision center in Garrett County.
           </p>
           <p>
-            In March 2020, long-time team leaders <strong>Mike Dawson</strong>{" "}
-            and <strong>John "Grover" Groves</strong> took over ownership —
+            In March 2020, long-time team leader{" "}
+            <strong>John "Grover" Groves</strong> stepped into shop leadership —
             keeping every staff member and continuing the same standards that
             built the shop's reputation over 30+ years.
           </p>
@@ -575,14 +608,14 @@ function About({ setPage }) {
             <strong>2 EPA 6H-certified paint technicians</strong> and{" "}
             <strong>5 I-CAR-certified collision technicians</strong>, operating
             out of a 22-bay facility equipped with computerized
-            frame-straightening and downdraft PPG paint booths.
+            frame-straightening and downdraft paint booths.
           </p>
         </div>
         <div className="space-y-3">
           {[
             [
-              "PPG Certified Refinish Facility",
-              "Lifetime nationwide paint warranty on every job.",
+              "Valspar & DeBeer Certified Refinish Facility",
+              "1-year nationwide paint warranty on every job.",
             ],
             [
               "I-CAR Certified Technicians",
@@ -602,7 +635,7 @@ function About({ setPage }) {
             ],
           ].map(([title, desc]) => (
             <div key={title} className="flex gap-3 bg-gray-50 rounded-xl p-4">
-              <span className="text-green-500 text-lg mt-0.5">✓</span>
+              <span className="text-brand-ink text-lg mt-0.5">✓</span>
               <div>
                 <p className="font-bold text-gray-800 text-sm">{title}</p>
                 <p className="text-gray-500 text-xs mt-0.5">{desc}</p>
@@ -615,30 +648,25 @@ function About({ setPage }) {
       {/* Timeline */}
       <div className="mb-14">
         <SectionTitle badge="Our History" title="39 Years in the Making" />
-        <div className="relative border-l-2 border-red-200 ml-4 space-y-6">
+        <div className="relative border-l-2 border-brand/30 ml-4 space-y-6">
           {TIMELINE.map(({ year, text }) => (
             <div key={year} className="pl-6 relative">
-              <div className="absolute -left-2 top-1 w-4 h-4 rounded-full bg-red-600 border-2 border-white" />
-              <p className="text-red-600 font-black text-sm">{year}</p>
+              <div className="absolute -left-2 top-1 w-4 h-4 rounded-full bg-brand border-2 border-white" />
+              <p className="text-brand-ink font-black text-sm">{year}</p>
               <p className="text-gray-600 text-sm">{text}</p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Meet the owners */}
+      {/* Meet the owner */}
       <div className="mb-14">
-        <SectionTitle badge="The Team" title="Meet the Owners" />
-        <div className="grid md:grid-cols-2 gap-6">
+        <SectionTitle badge="The Team" title="Meet the Owner" />
+        <div className="grid gap-6 max-w-md mx-auto">
           {[
             {
-              name: "Mike Dawson",
-              role: "Co-Owner · General Manager",
-              bio: "With over 20 years in collision repair, Mike oversees daily operations and holds I-CAR Platinum credentials. He's the backbone of the shop's quality standards and customer experience.",
-            },
-            {
               name: 'John "Grover" Groves',
-              role: "Co-Owner · Production Director",
+              role: "Owner · Production Director",
               bio: "A Swanton, MD native, Grover manages workflow and quality control on the shop floor. He's also a long-time sponsor of area motorsports and local Garrett County events.",
             },
           ].map(({ name, role, bio }) => (
@@ -646,11 +674,11 @@ function About({ setPage }) {
               key={name}
               className="bg-gray-50 rounded-2xl p-6 border border-gray-100"
             >
-              <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center text-2xl mb-4">
-                👤
+              <div className="w-14 h-14 rounded-full bg-brand/15 flex items-center justify-center mb-4">
+                <User className="w-7 h-7 text-brand-ink" strokeWidth={1.75} />
               </div>
               <h3 className="font-black text-gray-900 text-lg">{name}</h3>
-              <p className="text-red-600 text-xs font-semibold mb-2">{role}</p>
+              <p className="text-brand-ink text-xs font-semibold mb-2">{role}</p>
               <p className="text-gray-500 text-sm">{bio}</p>
             </div>
           ))}
@@ -663,41 +691,41 @@ function About({ setPage }) {
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
           {[
             [
-              "🏗️",
+              Warehouse,
               "22 Repair Bays",
               "12 oversized 10-ft doors handle everything from compact cars to full-size trucks.",
             ],
             [
-              "📐",
+              Ruler,
               "Laser Frame System",
               "$30K computerized frame-straightening restores structural integrity to factory specs.",
             ],
             [
-              "🎨",
+              SprayCan,
               "Downdraft Paint Booths",
-              "PPG-equipped booths guarantee a dust-free, baked finish every time.",
+              "Valspar & DeBeer-equipped booths guarantee a dust-free, baked finish every time.",
             ],
             [
-              "🔒",
+              Lock,
               "Secured Vehicle Storage",
               "Your vehicle is safe with us while repairs are underway.",
             ],
             [
-              "🏆",
-              "PPG Certified",
-              "One of the few PPG Certified Refinish Facilities in the region.",
+              Award,
+              "Valspar & DeBeer Certified",
+              "A certified Valspar & DeBeer refinish facility serving the region.",
             ],
             [
-              "🌿",
+              Leaf,
               "EPA 6H Compliant",
               "Environmentally responsible painting operations — certified and verified.",
             ],
-          ].map(([icon, title, desc]) => (
+          ].map(([Icon, title, desc]) => (
             <div
               key={title}
               className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm"
             >
-              <span className="text-3xl">{icon}</span>
+              <Icon className="w-8 h-8 text-brand-ink" strokeWidth={1.75} />
               <h4 className="font-bold text-gray-800 mt-2 mb-1 text-sm">
                 {title}
               </h4>
@@ -708,250 +736,73 @@ function About({ setPage }) {
       </div>
 
       {/* Community */}
-      <div className="bg-red-50 border border-red-100 rounded-2xl p-8 text-center mb-10">
+      <div className="bg-brand/10 border border-brand/30 rounded-2xl p-8 text-center mb-10">
         <span className="text-3xl">🏁</span>
         <h3 className="font-black text-gray-900 text-xl mt-3 mb-2">
           Community Involvement
         </h3>
         <p className="text-gray-600 text-sm max-w-lg mx-auto">
           Nu Finish is proud to sponsor local racing teams and Garrett County
-          events, including qualifiers at area dirt tracks. Supporting the
-          community that has supported us for nearly 40 years.
+          events, including our #32 dirt late model. Supporting the community
+          that has supported us for nearly 40 years.
         </p>
       </div>
 
-      <EstimateBtn setPage={setPage} />
+      <EstimateBtn />
     </div>
   );
 }
 
 // ── CONTACT ────────────────────────────────────────────────────
 function Contact() {
-  const [form, setForm] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    vehicle: "",
-    message: "",
-  });
-  const [photos, setPhotos] = useState([]);
-  const [sent, setSent] = useState(false);
-  const [dragOver, setDragOver] = useState(false);
-  const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
-
-  const handleFiles = (files) => {
-    const imgs = Array.from(files)
-      .filter((f) => f.type.startsWith("image/"))
-      .slice(0, 5);
-    imgs.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (e) =>
-        setPhotos((p) =>
-          p.length < 5 ? [...p, { url: e.target.result, name: file.name }] : p,
-        );
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const submit = () => {
-    if (form.name && form.phone) setSent(true);
-  };
-
   return (
     <div className="max-w-5xl mx-auto px-6 py-16">
       <SectionTitle
         badge="Get In Touch"
         title="Contact Us"
-        sub="Request a free estimate or ask us anything. We'll get back to you fast."
+        sub="Give us a call or stop by the shop Monday through Friday. Walk-ins are always welcome."
       />
       <div className="grid md:grid-cols-2 gap-10">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          {sent ? (
-            <div className="text-center py-10">
-              <span className="text-5xl">✅</span>
-              <h3 className="font-black text-gray-800 text-xl mt-4">
-                Request Sent!
-              </h3>
-              <p className="text-gray-500 text-sm mt-2 mb-1">
-                Thanks, <strong>{form.name}</strong>! We've received your
-                request.
-              </p>
-              <div className="bg-green-50 border border-green-200 rounded-xl p-3 text-sm text-green-800 mt-4 text-left">
-                📱 <strong>Check your phone</strong> — we just sent a
-                confirmation text to <strong>{form.phone}</strong>. Grover will
-                follow up with you shortly.
-              </div>
-              {photos.length > 0 && (
-                <p className="text-gray-400 text-xs mt-3">
-                  {photos.length} photo{photos.length > 1 ? "s" : ""} received.
-                </p>
-              )}
-              <button
-                onClick={() => {
-                  setSent(false);
-                  setForm({
-                    name: "",
-                    phone: "",
-                    email: "",
-                    vehicle: "",
-                    message: "",
-                  });
-                  setPhotos([]);
-                }}
-                className="mt-6 text-red-700 font-semibold text-sm hover:underline"
-              >
-                Submit another request
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <h3 className="font-bold text-gray-800 mb-1">
-                Request a Free Estimate
-              </h3>
-              <p className="text-gray-400 text-xs mb-3">
-                Fill out the form and Grover will text you back shortly.
-              </p>
-              {[
-                { k: "name", label: "Your Name *", ph: "John Smith" },
-                { k: "phone", label: "Phone Number *", ph: "(301) 555-0000" },
-                { k: "email", label: "Email (optional)", ph: "you@email.com" },
-                {
-                  k: "vehicle",
-                  label: "Vehicle",
-                  ph: "2020 Honda Civic - Blue",
-                },
-              ].map(({ k, label, ph }) => (
-                <div key={k}>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">
-                    {label}
-                  </label>
-                  <input
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-                    placeholder={ph}
-                    value={form[k]}
-                    onChange={(e) => set(k, e.target.value)}
-                  />
-                </div>
-              ))}
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">
-                  Describe the damage
-                </label>
-                <textarea
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
-                  rows={3}
-                  placeholder="Tell us what happened..."
-                  value={form.message}
-                  onChange={(e) => set("message", e.target.value)}
-                />
-              </div>
-
-              {/* Photo upload */}
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">
-                  Upload Photos{" "}
-                  <span className="text-gray-400 font-normal">
-                    (optional, up to 5)
-                  </span>
-                </label>
-                <div
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    setDragOver(true);
-                  }}
-                  onDragLeave={() => setDragOver(false)}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    setDragOver(false);
-                    handleFiles(e.dataTransfer.files);
-                  }}
-                  onClick={() => document.getElementById("photo-input").click()}
-                  className={`border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition ${dragOver ? "border-red-400 bg-red-50" : "border-gray-200 hover:border-red-300 hover:bg-gray-50"}`}
-                >
-                  <p className="text-2xl mb-1">📷</p>
-                  <p className="text-gray-500 text-xs">
-                    Drag & drop photos here or{" "}
-                    <span className="text-red-600 font-semibold">browse</span>
-                  </p>
-                  <p className="text-gray-400 text-xs mt-1">
-                    Helps Grover assess damage before you come in
-                  </p>
-                  <input
-                    id="photo-input"
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    className="hidden"
-                    onChange={(e) => handleFiles(e.target.files)}
-                  />
-                </div>
-
-                {/* Photo previews */}
-                {photos.length > 0 && (
-                  <div className="flex gap-2 mt-3 flex-wrap">
-                    {photos.map((p, i) => (
-                      <div key={i} className="relative">
-                        <img
-                          src={p.url}
-                          alt={p.name}
-                          className="w-16 h-16 object-cover rounded-lg border border-gray-200"
-                        />
-                        <button
-                          onClick={() =>
-                            setPhotos((ps) => ps.filter((_, j) => j !== i))
-                          }
-                          className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center leading-none"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                    {photos.length < 5 && (
-                      <div
-                        onClick={() =>
-                          document.getElementById("photo-input").click()
-                        }
-                        className="w-16 h-16 border-2 border-dashed border-gray-200 rounded-lg flex items-center justify-center text-gray-400 text-xl cursor-pointer hover:border-red-300 transition"
-                      >
-                        +
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              <button
-                onClick={submit}
-                disabled={!form.name || !form.phone}
-                className="w-full bg-red-700 text-white font-bold py-3 rounded-lg hover:bg-red-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                Send Request
-              </button>
-              <p className="text-gray-400 text-xs text-center">
-                📱 You'll receive an SMS confirmation immediately after
-                submitting.
-              </p>
-            </div>
-          )}
+        {/* Call / visit CTA */}
+        <div className="bg-black rounded-2xl p-8 text-white flex flex-col justify-center">
+          <h3 className="font-black text-2xl mb-2">Stop By the Shop</h3>
+          <p className="text-gray-300 text-sm mb-6">
+            Give us a call or bring your vehicle by and we'll take a look. We
+            work directly with your insurance company and handle the claim from
+            start to finish.
+          </p>
+          <a
+            href="tel:3013344727"
+            className="bg-brand text-black font-bold px-6 py-3 rounded-lg hover:bg-brand-hover transition text-center text-lg mb-3"
+          >
+            📞 Call (301) 334-4727
+          </a>
+          <p className="text-gray-400 text-xs text-center">
+            Mon–Fri 9am–5pm · Walk-ins welcome
+          </p>
         </div>
 
+        {/* Info cards */}
         <div className="space-y-4">
           {[
             {
-              icon: "📍",
+              Icon: MapPin,
               title: "Address",
               body: "1470 Maryland Hwy\nOakland, MD 21550",
             },
-            { icon: "📞", title: "Shop Phone", body: "(301) 334-4727" },
-            { icon: "✉️", title: "Email", body: "nufinish2020@gmail.com" },
+            { Icon: Phone, title: "Shop Phone", body: "(301) 334-4727" },
+            { Icon: Mail, title: "Email", body: "nufinish2020@gmail.com" },
             {
-              icon: "🕐",
+              Icon: Clock,
               title: "Business Hours",
               body: "Monday – Friday: 9:00 AM – 5:00 PM\nSaturday & Sunday: Closed",
             },
-          ].map(({ icon, title, body }) => (
+          ].map(({ Icon, title, body }) => (
             <div key={title} className="flex gap-4 bg-gray-50 rounded-xl p-4">
-              <span className="text-2xl">{icon}</span>
+              <Icon
+                className="w-6 h-6 text-brand-ink shrink-0"
+                strokeWidth={1.75}
+              />
               <div>
                 <p className="font-bold text-gray-800 text-sm">{title}</p>
                 <p className="text-gray-500 text-xs mt-0.5 whitespace-pre-line">
@@ -960,17 +811,9 @@ function Contact() {
               </div>
             </div>
           ))}
-          <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-sm text-blue-800">
-            <p className="font-bold mb-1">⚡ Quick Response</p>
-            <p className="text-xs">
-              Submit your request and you'll get an SMS confirmation right away.
-              Grover will follow up with you directly — usually same day during
-              business hours.
-            </p>
-          </div>
-          <div className="bg-red-50 border border-red-100 rounded-xl p-4 text-sm text-red-800">
-            <strong>Walk-ins welcome!</strong> Stop by anytime Mon–Fri for a
-            free, no-obligation estimate.
+          <div className="bg-brand/10 border border-brand/30 rounded-xl p-4 text-sm text-brand-ink">
+            <strong>Walk-ins welcome!</strong> Stop by anytime Mon–Fri — no
+            appointment needed.
           </div>
         </div>
       </div>
@@ -1030,7 +873,7 @@ function Admin() {
         </div>
         <button
           onClick={() => setShowAdd(!showAdd)}
-          className="bg-red-700 text-white font-bold px-4 py-2 rounded-lg text-sm hover:bg-red-800 transition"
+          className="bg-brand text-black font-bold px-4 py-2 rounded-lg text-sm hover:bg-brand-hover transition"
         >
           + New Job
         </button>
@@ -1047,7 +890,7 @@ function Admin() {
           ].map(([k, ph]) => (
             <input
               key={k}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand"
               placeholder={ph}
               value={newJob[k]}
               onChange={(e) =>
@@ -1058,7 +901,7 @@ function Admin() {
           <div className="flex gap-2">
             <button
               onClick={addJob}
-              className="bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-800 transition"
+              className="bg-brand text-black px-4 py-2 rounded-lg text-sm font-bold hover:bg-brand-hover transition"
             >
               Add Job
             </button>
@@ -1077,7 +920,7 @@ function Admin() {
           <div
             key={job.id}
             onClick={() => openJob(job)}
-            className={`bg-white rounded-2xl shadow-sm p-4 cursor-pointer hover:shadow-md transition border-2 ${selected?.id === job.id ? "border-red-500" : "border-transparent"}`}
+            className={`bg-white rounded-2xl shadow-sm p-4 cursor-pointer hover:shadow-md transition border-2 ${selected?.id === job.id ? "border-brand" : "border-transparent"}`}
           >
             <div className="flex justify-between items-start">
               <div>
@@ -1101,7 +944,7 @@ function Admin() {
       </div>
 
       {selected && (
-        <div className="bg-white rounded-2xl shadow border-2 border-red-500 p-6 space-y-5">
+        <div className="bg-white rounded-2xl shadow border-2 border-brand p-6 space-y-5">
           <div>
             <p className="text-xs text-gray-400 font-semibold">{selected.id}</p>
             <h3 className="font-black text-gray-900 text-lg">
@@ -1149,12 +992,12 @@ function Admin() {
               rows={3}
               value={editNote}
               onChange={(e) => setEditNote(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand resize-none"
               placeholder="Leave a note the customer will see..."
             />
             <button
               onClick={saveNote}
-              className="mt-2 bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-800 transition"
+              className="mt-2 bg-brand text-black px-4 py-2 rounded-lg text-sm font-bold hover:bg-brand-hover transition"
             >
               Save Note
             </button>
@@ -1172,11 +1015,14 @@ function Admin() {
 // ── FOOTER ─────────────────────────────────────────────────────
 function Footer({ setPage }) {
   return (
-    <footer className="bg-gray-900 text-gray-400 text-sm px-6 py-10">
+    <footer className="bg-black text-gray-400 text-sm px-6 py-10">
       <div className="max-w-5xl mx-auto grid sm:grid-cols-3 gap-8 mb-8">
         <div>
-          <p className="text-white font-black text-lg mb-1">NU FINISH</p>
-          <p className="text-xs text-gray-400 mb-2">Auto Collision LLC</p>
+          <img
+            src="/nufinish-badge-dark.jpg"
+            alt="Nu Finish Collision Center"
+            className="w-24 h-24 rounded-full mb-3"
+          />
           <p className="text-xs">
             Serving Garrett County since 1986.
             <br />
@@ -1204,7 +1050,7 @@ function Footer({ setPage }) {
         </div>
       </div>
       <div className="border-t border-gray-800 pt-6 text-center text-xs text-gray-600">
-        © {new Date().getFullYear()} Nu Finish Auto Collision LLC. All rights
+        © {new Date().getFullYear()} Nu Finish Collision Center. All rights
         reserved.
       </div>
     </footer>

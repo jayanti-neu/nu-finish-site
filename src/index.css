@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+/* Nu Finish Collision Center brand palette (from logo + race car) */
+@theme {
+  --color-brand: #4fd13c; /* bright brand green — fills, buttons, active states */
+  --color-brand-hover: #43bd31; /* button hover */
+  --color-brand-ink: #2c811d; /* darker green for text on light backgrounds (contrast-safe) */
+  --color-brand-cyan: #22a5db; /* cyan accent from the wordmark star / race car */
+}
