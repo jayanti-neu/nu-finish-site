@@ -7,3 +7,340 @@
   --color-brand-ink: #2c811d; /* darker green for text on light backgrounds (contrast-safe) */
   --color-brand-cyan: #22a5db; /* cyan accent from the wordmark star / race car */
 }
+
+:root {
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --site-bg:
+    radial-gradient(circle at top, rgba(79, 209, 60, 0.08), transparent 28%),
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--site-bg);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --site-bg:
+      radial-gradient(circle at top, rgba(79, 209, 60, 0.08), transparent 30%),
+      linear-gradient(180deg, #020617 0%, #0b1220 100%);
+    color-scheme: dark;
+  }
+
+  .theme-shell {
+    background-color: #020617 !important;
+    color: #e2e8f0 !important;
+  }
+
+  .theme-shell section.bg-white,
+  .theme-shell #services,
+  .theme-shell #gallery,
+  .theme-shell #owner,
+  .theme-shell #contact {
+    background: linear-gradient(180deg, #0b1220 0%, #0f172a 100%) !important;
+  }
+
+  .theme-shell .bg-white,
+  .theme-shell .bg-slate-50,
+  .theme-shell .bg-slate-100 {
+    background-color: rgba(15, 23, 42, 0.82) !important;
+  }
+
+  .theme-shell .text-slate-950,
+  .theme-shell .text-slate-900,
+  .theme-shell .text-slate-600,
+  .theme-shell .text-slate-500,
+  .theme-shell .text-brand-ink {
+    color: #e2e8f0 !important;
+  }
+
+  .theme-shell .border-black\/10,
+  .theme-shell .border-black\/8,
+  .theme-shell .border-black\/6,
+  .theme-shell .border-slate-300 {
+    border-color: rgba(148, 163, 184, 0.26) !important;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(79, 209, 60, 0);
+  }
+
+  50% {
+    box-shadow: 0 0 42px rgba(79, 209, 60, 0.18);
+  }
+}
+
+.motion-enter {
+  opacity: 0;
+  animation: rise-in 0.8s var(--motion-delay, 0ms) var(--motion-ease) forwards;
+}
+
+.motion-card {
+  opacity: 0;
+  animation: rise-in 0.7s var(--motion-delay, 0ms) var(--motion-ease) forwards;
+  transition:
+    transform 220ms var(--motion-ease),
+    box-shadow 220ms var(--motion-ease),
+    border-color 220ms var(--motion-ease),
+    background-color 220ms var(--motion-ease);
+}
+
+.motion-card:hover {
+  transform: translateY(-6px);
+}
+
+.motion-float {
+  animation: drift 7s ease-in-out infinite;
+}
+
+.motion-glow {
+  animation: pulse-glow 4.2s ease-in-out infinite;
+}
+
+/* Scroll-triggered reveal — hidden until an IntersectionObserver toggles .in-view */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.8s var(--motion-ease) var(--motion-delay, 0ms),
+    transform 0.8s var(--motion-ease) var(--motion-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+[data-reveal="left"] {
+  transform: translateX(-32px);
+}
+
+[data-reveal="right"] {
+  transform: translateX(32px);
+}
+
+[data-reveal="zoom"] {
+  transform: scale(0.94);
+}
+
+[data-reveal].in-view {
+  opacity: 1;
+  transform: none;
+}
+
+/* Slow parallax-style zoom on hero backgrounds */
+@keyframes ken-burns {
+  0% {
+    transform: scale(1.05) translate(0, 0);
+  }
+  50% {
+    transform: scale(1.14) translate(-1.5%, -1%);
+  }
+  100% {
+    transform: scale(1.05) translate(0, 0);
+  }
+}
+
+.ken-burns {
+  animation: ken-burns 26s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Animated brand-gradient text sweep */
+@keyframes text-shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+.text-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    #4fd13c 0%,
+    #ffffff 30%,
+    #22a5db 55%,
+    #4fd13c 80%,
+    #ffffff 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: text-shimmer 6s linear infinite;
+}
+
+/* Diagonal shine sweep on primary CTA hover */
+@keyframes shine-sweep {
+  0% {
+    transform: translateX(-140%) skewX(-20deg);
+  }
+  100% {
+    transform: translateX(240%) skewX(-20deg);
+  }
+}
+
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn-shine::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 45%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 100%
+  );
+  transform: translateX(-140%) skewX(-20deg);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.btn-shine:hover::before,
+.btn-shine:focus-visible::before {
+  animation: shine-sweep 900ms ease forwards;
+}
+
+/* Infinite horizontal marquee for trust/certifications strip */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    black 8%,
+    black 92%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    black 8%,
+    black 92%,
+    transparent
+  );
+}
+
+.marquee-track {
+  display: flex;
+  gap: 1rem;
+  width: max-content;
+  animation: marquee 42s linear infinite;
+}
+
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+
+/* Animated underline for nav links */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: 6px;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 260ms var(--motion-ease);
+  border-radius: 2px;
+}
+
+.nav-link:hover::after,
+.nav-link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* Subtle 3D tilt on hover */
+.tilt-card {
+  transform-style: preserve-3d;
+  transition:
+    transform 320ms var(--motion-ease),
+    box-shadow 320ms var(--motion-ease);
+}
+
+.tilt-card:hover {
+  transform: translateY(-8px) rotateX(2deg) rotateY(-2deg);
+}
+
+/* Top-of-page scroll progress track */
+.scroll-progress {
+  background: linear-gradient(90deg, #4fd13c 0%, #22a5db 50%, #4fd13c 100%);
+  background-size: 200% 100%;
+  animation: text-shimmer 4s linear infinite;
+  transition: width 120ms linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .motion-enter,
+  .motion-card,
+  .motion-float,
+  .motion-glow,
+  .ken-burns,
+  .text-shimmer,
+  .marquee-track,
+  .scroll-progress,
+  [data-reveal] {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .btn-shine::before {
+    display: none;
+  }
+}
