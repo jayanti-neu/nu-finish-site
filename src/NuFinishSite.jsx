@@ -340,26 +340,15 @@ function ScrollProgress() {
 
 function SprayGunIcon({ className }) {
   return (
-    <svg
-      viewBox="0 0 64 64"
-      fill="none"
+    <img
+      src="/spraygun.png"
+      alt=""
       className={className}
       aria-hidden="true"
-    >
-      <path
-        d="M18 18h14l10 10-7 7 8 8-6 6-8-8-5 5-9-9 5-5-4-14 2-2Z"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M41 21l8-5m-2 13 9 1M18 41l-4 9m10-4 8 8"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-    </svg>
+      loading="lazy"
+      decoding="async"
+      style={{ objectFit: "contain" }}
+    />
   );
 }
 
@@ -372,23 +361,30 @@ function WindshieldIcon({ className }) {
       aria-hidden="true"
     >
       <path
-        d="M14 44 20 22c1-3 4-6 8-6h8c4 0 7 3 8 6l6 22"
+        d="M14 45 19 22c1-4 4-7 8-7h10c4 0 7 3 8 7l5 23"
         stroke="currentColor"
-        strokeWidth="3"
+        strokeWidth="2.75"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M18 44h28M24 26h16M21 37h22"
+        d="M18 45h28M23 27h18M21 36h22"
         stroke="currentColor"
-        strokeWidth="3"
+        strokeWidth="2.75"
         strokeLinecap="round"
       />
       <path
-        d="M12 48h40"
+        d="M12 50h40"
         stroke="currentColor"
-        strokeWidth="3.5"
+        strokeWidth="2.75"
         strokeLinecap="round"
+      />
+      <path
+        d="M24 49l5-5m11 5-5-5"
+        stroke="currentColor"
+        strokeWidth="2.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -403,16 +399,22 @@ function GarageDoorIcon({ className }) {
       aria-hidden="true"
     >
       <path
-        d="M12 54V18l4-4h32l4 4v36"
+        d="M12 54V19l4-4h32l4 4v35"
         stroke="currentColor"
-        strokeWidth="3"
+        strokeWidth="2.75"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M20 24h24M20 31h24M20 38h24M20 45h24"
+        d="M19 24h26M19 31h26M19 38h26M19 45h26"
         stroke="currentColor"
-        strokeWidth="3"
+        strokeWidth="2.75"
+        strokeLinecap="round"
+      />
+      <path
+        d="M30 51h4"
+        stroke="currentColor"
+        strokeWidth="2.75"
         strokeLinecap="round"
       />
     </svg>
@@ -430,29 +432,30 @@ function PaintBoothIcon({ className }) {
       <path
         d="M12 52V18h40v34"
         stroke="currentColor"
-        strokeWidth="3"
+        strokeWidth="2.75"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M20 18V12h24v6M20 52h24"
+        d="M20 18v-6h24v6M20 52h24"
         stroke="currentColor"
-        strokeWidth="3"
+        strokeWidth="2.75"
         strokeLinecap="round"
       />
       <path
-        d="M28 26v12m8-12v12m8-12v12"
+        d="M24 25h16M24 31h16M24 37h16"
         stroke="currentColor"
-        strokeWidth="3"
+        strokeWidth="2.75"
         strokeLinecap="round"
       />
       <path
-        d="m50 28 6 4-6 4"
+        d="m50 29 6 3-6 3"
         stroke="currentColor"
-        strokeWidth="3"
+        strokeWidth="2.75"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+      <circle cx="32" cy="20" r="1.35" fill="currentColor" />
     </svg>
   );
 }
@@ -466,30 +469,31 @@ function PartnerServicesIcon({ className }) {
       aria-hidden="true"
     >
       <path
-        d="M19 20h10l4 5-9 11H14l-4-5 9-11Z"
+        d="M14 23h12l4 5-8 9H10l-4-5 8-9Z"
         stroke="currentColor"
-        strokeWidth="3"
+        strokeWidth="2.75"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M45 28H35l-4-5 9-11h10l4 5-9 11Z"
+        d="M50 41H38l-4-5 8-9h12l4 5-8 9Z"
         stroke="currentColor"
-        strokeWidth="3"
+        strokeWidth="2.75"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M25 31h14"
+        d="M23 30h18"
         stroke="currentColor"
-        strokeWidth="3"
+        strokeWidth="2.75"
         strokeLinecap="round"
       />
       <path
-        d="M22 47h20"
+        d="M22 34l6 6m14-16-6-6"
         stroke="currentColor"
-        strokeWidth="3"
+        strokeWidth="2.75"
         strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -779,7 +783,7 @@ function ServicesSection() {
               style={motionDelay(index * 90)}
             >
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 text-brand">
-                <Icon className="h-8 w-8" />
+                <Icon className="h-8 w-8 md:h-[2.15rem] md:w-[2.15rem]" />
               </div>
               <h3 className="mt-5 text-xl font-black text-slate-950">
                 {title}
@@ -1094,7 +1098,7 @@ function FacilitySection() {
               style={motionDelay(index * 85)}
             >
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 text-brand">
-                <Icon className="h-8 w-8" />
+                <Icon className="h-8 w-8 md:h-[2.15rem] md:w-[2.15rem]" />
               </div>
               <h3 className="mt-5 text-xl font-black text-slate-950">
                 {title}
@@ -1139,9 +1143,24 @@ function GallerySection() {
     if (selectedImage === null) return;
 
     const onKeyDown = (event) => {
-      if (event.key === "Escape") closeLightbox();
-      if (event.key === "ArrowRight") showNext();
-      if (event.key === "ArrowLeft") showPrev();
+      if (event.key === "Escape") {
+        if (lightboxPhase === "closing") return;
+        if (prefersReducedMotion) {
+          setSelectedImage(null);
+          setLightboxPhase("closed");
+        } else {
+          setLightboxPhase("closing");
+        }
+      }
+      if (event.key === "ArrowRight") {
+        setSelectedImage((index) => (index + 1) % GALLERY_IMAGES.length);
+      }
+      if (event.key === "ArrowLeft") {
+        setSelectedImage(
+          (index) =>
+            (index - 1 + GALLERY_IMAGES.length) % GALLERY_IMAGES.length,
+        );
+      }
     };
 
     const { body } = document;
@@ -1153,7 +1172,7 @@ function GallerySection() {
       body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [selectedImage]);
+  }, [selectedImage, lightboxPhase, prefersReducedMotion]);
 
   useEffect(() => {
     if (selectedImage === null || lightboxPhase !== "enter") return;
