@@ -684,7 +684,7 @@ function Hero() {
 
         <div className="grid gap-4 self-end">
           <div
-            className="motion-card motion-float rounded-[28px] border border-white/10 bg-white/6 p-6 shadow-[0_20px_80px_rgba(0,0,0,0.35)] backdrop-blur"
+            className="motion-card motion-float rounded-[28px] border border-white/10 bg-white/[6%] p-6 shadow-[0_20px_80px_rgba(0,0,0,0.35)] backdrop-blur"
             style={motionDelay(160)}
           >
             <p className="text-[11px] uppercase tracking-[0.28em] text-slate-400">
@@ -744,7 +744,7 @@ function TrustBar() {
         {[...items, ...items].map(([title, detail], index) => (
           <div
             key={`${title}-${index}`}
-            className="flex min-w-[260px] items-center gap-3 rounded-2xl border border-black/6 bg-white px-5 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.04)]"
+            className="flex min-w-[260px] items-center gap-3 rounded-2xl border border-black/[6%] bg-white px-5 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.04)]"
           >
             <span className="inline-block h-2 w-2 rounded-full bg-brand" />
             <div>
@@ -779,7 +779,7 @@ function ServicesSection() {
             <article
               key={title}
               data-reveal
-              className="tilt-card group rounded-[28px] border border-black/8 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)] hover:shadow-[0_22px_70px_rgba(15,23,42,0.1)]"
+              className="tilt-card group rounded-[28px] border border-black/[8%] bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)] hover:shadow-[0_22px_70px_rgba(15,23,42,0.1)]"
               style={motionDelay(index * 90)}
             >
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 text-brand">
@@ -1094,7 +1094,7 @@ function FacilitySection() {
             <article
               key={title}
               data-reveal={index % 2 === 0 ? "left" : "right"}
-              className="tilt-card rounded-[28px] border border-black/8 bg-slate-50 p-6"
+              className="tilt-card rounded-[28px] border border-black/[8%] bg-slate-50 p-6"
               style={motionDelay(index * 85)}
             >
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 text-brand">
@@ -1244,7 +1244,7 @@ function GallerySection() {
               <figure
                 key={src}
                 data-reveal={index % 2 === 0 ? "left" : "right"}
-                className={`group overflow-hidden rounded-[30px] border border-black/8 bg-white shadow-[0_18px_55px_rgba(15,23,42,0.08)] ${layout ?? ""}`}
+                className={`group overflow-hidden rounded-[30px] border border-black/[8%] bg-white shadow-[0_18px_55px_rgba(15,23,42,0.08)] ${layout ?? ""}`}
                 style={motionDelay(index * 80)}
               >
                 <button
@@ -1260,7 +1260,7 @@ function GallerySection() {
                     className="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.04]"
                   />
                 </button>
-                <figcaption className="border-t border-black/6 px-5 py-4">
+                <figcaption className="border-t border-black/[6%] px-5 py-4">
                   <p className="text-[11px] font-black uppercase tracking-[0.2em] text-brand-ink">
                     {title}
                   </p>
@@ -1275,7 +1275,7 @@ function GallerySection() {
 
         {activeImage ? (
           <div
-            className={`fixed inset-0 z-[90] bg-slate-950/88 p-4 backdrop-blur-sm transition-opacity duration-200 md:p-8 ${lightboxPhase === "enter" || lightboxPhase === "closing" ? "opacity-0" : "opacity-100"}`}
+            className={`fixed inset-0 z-[90] bg-slate-950/[88%] p-4 backdrop-blur-sm transition-opacity duration-200 md:p-8 ${lightboxPhase === "enter" || lightboxPhase === "closing" ? "opacity-0" : "opacity-100"}`}
             role="dialog"
             aria-modal="true"
             aria-label={`${activeImage.title} image viewer`}
@@ -1411,7 +1411,7 @@ function ContactSection() {
           <CTAGroup />
         </div>
 
-        <div className="rounded-[32px] border border-black/8 bg-slate-50 p-8 md:p-10">
+        <div className="rounded-[32px] border border-black/[8%] bg-slate-50 p-8 md:p-10">
           <p className="text-[11px] uppercase tracking-[0.28em] text-brand-ink">
             What to expect
           </p>
@@ -1519,7 +1519,7 @@ function FloatingCallButton() {
   useEffect(() => {
     const onScroll = () => setVisible(window.scrollY > 360);
     onScroll();
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
