@@ -1108,29 +1108,26 @@ function OwnerSpotlightSection() {
 
 function FacilitySection() {
   return (
-    <section className="bg-white px-4 py-18 md:px-6">
+    <section className="bg-slate-950 px-4 py-18 text-white md:px-6">
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           kicker="Facility & Certifications"
           title="The tools, space, and training to handle repairs with confidence."
           body="Nu Finish combines facility capacity, refinishing certifications, and experienced technicians to deliver repeatable quality from structural work through final refinish."
-          dark={false}
         />
         <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {FACILITY.map(({ Icon, title, desc }, index) => (
             <article
               key={title}
               data-reveal={index % 2 === 0 ? "left" : "right"}
-              className="tilt-card rounded-[28px] border border-black/[8%] bg-slate-50 p-6"
+              className="facility-card tilt-card rounded-[28px] border border-white/12 p-6 shadow-[0_14px_34px_rgba(0,0,0,0.34)] transition hover:border-white/20 hover:shadow-[0_20px_48px_rgba(0,0,0,0.42)]"
               style={motionDelay(index * 85)}
             >
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 text-brand">
+              <div className="facility-icon-shell flex h-14 w-14 items-center justify-center rounded-2xl text-brand">
                 <Icon className="h-8 w-8 md:h-[2.15rem] md:w-[2.15rem]" />
               </div>
-              <h3 className="mt-5 text-xl font-black text-slate-950">
-                {title}
-              </h3>
-              <p className="mt-3 text-sm leading-7 text-slate-600">{desc}</p>
+              <h3 className="mt-5 text-xl font-black text-white">{title}</h3>
+              <p className="mt-3 text-sm leading-7 text-slate-300">{desc}</p>
             </article>
           ))}
         </div>
