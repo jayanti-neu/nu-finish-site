@@ -1437,7 +1437,7 @@ function ContactSection() {
           <a
             href={MAP_HREF}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             className="mt-8 inline-flex items-center gap-2 text-sm font-black text-brand-ink hover:underline"
           >
             Open directions in Google Maps
