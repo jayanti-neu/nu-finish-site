@@ -276,6 +276,21 @@ const VIDEO_ASSETS = {
     mobileWebp: "/gallery/videos/mobile-webp/motorsports-legacy.webp",
     still: "/gallery/front-of-building.webp",
   },
+  facility: {
+    desktop: "/gallery/videos/web/clear-coat-booth.mp4",
+    mobileWebp: "/gallery/videos/mobile-webp/clear-coat-booth.webp",
+    still: "/gallery/grover-beginning-to-clear-a-vehicle.webp",
+  },
+  ownerTrack: {
+    desktop: "/gallery/videos/web/track-action.mp4",
+    mobileWebp: "/gallery/videos/mobile-webp/track-action.webp",
+    still: "/gallery/front-of-building.webp",
+  },
+  ownerRace: {
+    desktop: "/gallery/videos/web/hero-race.mp4",
+    mobileWebp: "/gallery/videos/mobile-webp/hero-race.webp",
+    still: "/gallery/front-of-building.webp",
+  },
 };
 
 const motionDelay = (delay) => ({ "--motion-delay": `${delay}ms` });
@@ -890,8 +905,8 @@ function ProcessSection() {
             <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/40 to-transparent" />
             <div className="absolute inset-0 flex items-end p-5 md:p-7">
               <p className="max-w-2xl text-sm font-semibold leading-7 text-slate-100 md:text-base">
-                Real work in motion: every repair moves through a documented,
-                controlled process before final review and delivery.
+                This paint-color-blend clip shows controlled transition work,
+                where color is matched and blended before final clear.
               </p>
             </div>
           </div>
@@ -1062,9 +1077,9 @@ function OwnerSpotlightSection() {
                   John Groves · Owner Spotlight
                 </p>
                 <p className="mt-2 max-w-2xl text-sm leading-7 text-white/90">
-                  Motorsport is a personal chapter of John's story and a
-                  reflection of his roots in the local community. It remains
-                  separate from Nu Finish services and day-to-day shop work.
+                  This motorsports-legacy clip reflects John's personal
+                  background in local racing, separate from Nu Finish's repair
+                  services and day-to-day production work.
                 </p>
               </div>
             </div>
@@ -1099,6 +1114,66 @@ function OwnerSpotlightSection() {
                 confidence.
               </p>
             </div>
+
+            <div className="mt-7 grid gap-4 sm:grid-cols-2">
+              {[
+                [
+                  "Regional Dirt Track Nights",
+                  "Footage from local weekend dirt-track events where John competes with WG Motorsports, showing his long-standing connection to the area.",
+                  VIDEO_ASSETS.ownerTrack,
+                ],
+                [
+                  "Race Day Background",
+                  "Additional race-day visuals provide personal background on the owner while Nu Finish remains focused on collision repair and refinishing.",
+                  VIDEO_ASSETS.ownerRace,
+                ],
+              ].map(([title, caption, asset]) => (
+                <div
+                  key={title}
+                  className="overflow-hidden rounded-2xl border border-black/12 bg-slate-950"
+                >
+                  <div className="relative aspect-[4/3] w-full">
+                    {prefersReducedMotion ? (
+                      <img
+                        src={asset.still}
+                        alt=""
+                        aria-hidden="true"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <>
+                        <img
+                          src={asset.mobileWebp}
+                          alt=""
+                          aria-hidden="true"
+                          className="h-full w-full object-cover md:hidden"
+                        />
+                        <video
+                          className="hidden h-full w-full object-cover md:block"
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          preload="metadata"
+                          poster={asset.still}
+                          aria-hidden="true"
+                        >
+                          <source src={asset.desktop} type="video/mp4" />
+                        </video>
+                      </>
+                    )}
+                  </div>
+                  <div className="border-t border-white/10 px-3 py-2 text-white">
+                    <p className="text-[10px] font-black uppercase tracking-[0.16em] text-brand">
+                      {title}
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-slate-300">
+                      {caption}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -1107,6 +1182,8 @@ function OwnerSpotlightSection() {
 }
 
 function FacilitySection() {
+  const prefersReducedMotion = usePrefersReducedMotion();
+
   return (
     <section className="bg-slate-950 px-4 py-18 text-white md:px-6">
       <div className="mx-auto max-w-6xl">
@@ -1115,6 +1192,55 @@ function FacilitySection() {
           title="The tools, space, and training to handle repairs with confidence."
           body="Nu Finish combines facility capacity, refinishing certifications, and experienced technicians to deliver repeatable quality from structural work through final refinish."
         />
+
+        <div
+          data-reveal="zoom"
+          className="mt-10 overflow-hidden rounded-[30px] border border-white/12 bg-white/5"
+          style={motionDelay(30)}
+        >
+          <div className="relative aspect-[16/7] w-full">
+            {prefersReducedMotion ? (
+              <img
+                src={VIDEO_ASSETS.facility.still}
+                alt=""
+                aria-hidden="true"
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <>
+                <img
+                  src={VIDEO_ASSETS.facility.mobileWebp}
+                  alt=""
+                  aria-hidden="true"
+                  className="h-full w-full object-cover md:hidden"
+                />
+                <video
+                  className="hidden h-full w-full object-cover md:block"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="metadata"
+                  poster={VIDEO_ASSETS.facility.still}
+                  aria-hidden="true"
+                >
+                  <source
+                    src={VIDEO_ASSETS.facility.desktop}
+                    type="video/mp4"
+                  />
+                </video>
+              </>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
+            <div className="absolute inset-0 flex items-end p-5 md:p-6">
+              <p className="max-w-2xl text-sm font-semibold leading-7 text-slate-100 md:text-base">
+                This clear-coat-booth clip highlights controlled airflow and
+                booth conditions used during final finish stages.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {FACILITY.map(({ Icon, title, desc }, index) => (
             <article
