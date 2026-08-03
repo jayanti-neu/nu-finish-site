@@ -34,60 +34,69 @@ const SERVICES = [
   {
     Icon: Wrench,
     title: "Collision Repair",
-    desc: "Structural and cosmetic repairs completed with care, accuracy, and a clear communication process from intake through delivery.",
+    desc: "Damage analysis, panel replacement, and body corrections are completed to documented repair plans with clear status updates from intake to delivery.",
   },
   {
     Icon: SprayGunIcon,
     title: "Paint & Refinishing",
-    desc: "Valspar and DeBeer certified refinishing with careful color match work and a 1-year paint warranty for added confidence after delivery.",
+    desc: "Valspar and DeBeer systems are applied through controlled prep, blend strategy, and clear-coat finishing backed by a 1-year paint warranty.",
   },
   {
     Icon: WindshieldIcon,
     title: "Glass Replacement",
-    desc: "Glass replacement is coordinated to keep repairs moving smoothly and to return vehicles safely and cleanly.",
+    desc: "Windshield and glass replacement are coordinated within the full repair schedule so sealing, cleanup, and delivery standards stay consistent.",
   },
   {
     Icon: Ruler,
     title: "Frame & Unibody Repair",
-    desc: "Computerized measuring and straightening tools help restore alignment and structural integrity to manufacturer expectations.",
+    desc: "Computerized measurement and straightening tools support dimensional accuracy for frame and unibody corrections.",
   },
   {
     Icon: ShieldCheck,
     title: "Insurance Claim Coordination",
-    desc: "We work with customers and insurance carriers throughout the repair process to help keep paperwork, approvals, and scheduling moving smoothly.",
+    desc: "Estimate documentation, supplements, and approvals are managed with insurance carriers so repair progress stays organized and transparent.",
   },
   {
     Icon: PartnerServicesIcon,
     title: "Specialty Repair Coordination",
-    desc: "When outside specialty work is needed, we coordinate it clearly so you know what is being handled, when it is happening, and what to expect next.",
+    desc: "Outside specialty operations are coordinated to align with production timing so customers have one clear schedule and one communication path.",
   },
 ];
+
+const SERVICE_TECH_TAGS = {
+  "Collision Repair": ["Panel Fit", "Structural"],
+  "Paint & Refinishing": ["Color Match", "Blend"],
+  "Glass Replacement": ["Seal Check", "Clean Install"],
+  "Frame & Unibody Repair": ["Measurement", "Straightening"],
+  "Insurance Claim Coordination": ["Estimate Docs", "Approvals"],
+  "Specialty Repair Coordination": ["Partner Ops", "Timeline"],
+};
 
 const PROCESS = [
   {
     step: "01",
-    title: "Call or Stop In",
-    body: "Bring the vehicle to the shop or call first so the team can begin the intake conversation and explain the next step for your situation.",
+    title: "Intake & Damage Check",
+    body: "Call or stop in to begin intake, review visible damage, and set the right estimate path for insurance or customer-pay repair work.",
   },
   {
     step: "02",
-    title: "Inspection & Documentation",
-    body: "Damage is reviewed, documented, and organized into the estimate process through the proper insurance or customer-pay channel.",
+    title: "Blueprint & Estimate",
+    body: "Damage is documented, repair operations are outlined, and the estimate is prepared with supporting notes for approvals.",
   },
   {
     step: "03",
     title: "Approval & Scheduling",
-    body: "Insurance jobs move forward once the carrier approves the repair plan. Customer-pay work follows the same path, with approval coming directly from the customer.",
+    body: "Once approved, the vehicle is scheduled into production with parts planning and a projected completion window.",
   },
   {
     step: "04",
-    title: "Repair, Refinish & Coordination",
-    body: "Repairs, refinishing, and any needed specialty work are coordinated carefully so the customer knows what is happening and why.",
+    title: "Body, Refinish & Reassembly",
+    body: "Structural and body repairs move into prep, color, and clear, then reassembly and quality checks before release.",
   },
   {
     step: "05",
-    title: "Final Review & Pickup",
-    body: "Each vehicle goes through final review before pickup, with completed refinishing work covered by a 1-year paint warranty.",
+    title: "Final QC & Delivery",
+    body: "Final inspection confirms fit, finish, and cleanup before pickup, with refinishing work covered by a 1-year paint warranty.",
   },
 ];
 
@@ -634,24 +643,27 @@ function Hero() {
           aria-hidden="true"
           className="absolute inset-0 h-full w-full object-cover opacity-60"
         />
+        <div
+          className="shop-floor-overlay absolute inset-0"
+          aria-hidden="true"
+        />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(79,209,60,0.22),_transparent_36%),linear-gradient(135deg,_rgba(0,0,0,0.66),_rgba(0,0,0,0.44)_55%,_rgba(34,165,219,0.10))]" />
       </div>
 
       <div className="relative mx-auto grid max-w-6xl gap-12 px-4 py-18 md:grid-cols-[1.15fr_0.85fr] md:px-6 md:py-24">
         <div className="motion-enter" style={motionDelay(0)}>
           <div className="motion-glow mb-5 inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-brand">
-            Serving Garrett County since 1986
+            Collision • Auto Body • Refinishing Since 1986
           </div>
-          <h1 className="max-w-3xl text-4xl font-black leading-[1.02] text-white md:text-6xl">
-            Collision repair built on{" "}
-            <span className="text-shimmer">
-              clear process, precise work, and local trust.
-            </span>
+          <h1 className="text-shimmer max-w-3xl text-4xl font-black leading-[1.02] md:text-6xl">
+            Auto body collision and refinishing built on precise body fit,
+            controlled paint work, and hometown trust.
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
             Nu Finish Collision Center has served Garrett County drivers since
-            1986 with collision repair, refinishing, and claim coordination
-            built around honest communication and quality workmanship.
+            1986 with collision repair, panel alignment, refinishing, and
+            insurance coordination centered on clear communication and
+            production-grade workmanship.
           </p>
 
           <div className="motion-enter" style={motionDelay(180)}>
@@ -660,9 +672,12 @@ function Hero() {
 
           <div className="mt-10 grid gap-3 sm:grid-cols-3">
             {[
-              ["Get Started", "Call or stop in to get started"],
-              ["Refinishing", "Valspar & DeBeer certified refinishing"],
-              ["Warranty", "1-year paint warranty"],
+              ["Collision Intake", "Documented estimate and repair planning"],
+              ["Color Match", "Valspar & DeBeer certified refinishing"],
+              [
+                "Delivery Standard",
+                "Final inspection with 1-year paint warranty",
+              ],
             ].map(([label, item], index) => (
               <div
                 key={item}
@@ -688,14 +703,14 @@ function Hero() {
             style={motionDelay(160)}
           >
             <p className="text-[11px] uppercase tracking-[0.28em] text-slate-400">
-              At a glance
+              Shop Specs
             </p>
             <div className="mt-5 grid grid-cols-2 gap-4">
               {[
                 ["22", "Bay facility"],
-                ["1997", "Current location since"],
+                ["Paint Booth", "Controlled refinish zone"],
                 ["1 Year", "Paint warranty"],
-                ["Mon-Fri", "9 AM-5 PM"],
+                ["Mon-Fri", "Production schedule"],
               ].map(([value, label]) => (
                 <div key={label} className="rounded-2xl bg-black/35 p-4">
                   <p className="text-2xl font-black text-white">{value}</p>
@@ -728,12 +743,12 @@ function Hero() {
 
 function TrustBar() {
   const items = [
-    ["Certified", "Valspar & DeBeer refinishing"],
-    ["Coordinated", "Insurance and customer-pay workflows"],
+    ["Color Match", "Valspar & DeBeer paint systems"],
+    ["Body Alignment", "Frame and unibody correction workflow"],
+    ["Refinish Quality", "Controlled prep and clear-coat stages"],
     ["Protected", "1-year paint warranty"],
     ["Local", "Garrett County roots since 1986"],
-    ["Repaired", "Frame & unibody precision"],
-    ["Guided", "Phone-first intake process"],
+    ["Guided", "Insurance and customer-pay coordination"],
   ];
   return (
     <section
@@ -744,7 +759,7 @@ function TrustBar() {
         {[...items, ...items].map(([title, detail], index) => (
           <div
             key={`${title}-${index}`}
-            className="flex min-w-[260px] items-center gap-3 rounded-2xl border border-black/[6%] bg-white px-5 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.04)]"
+            className="flex min-w-[280px] items-center gap-3 rounded-2xl border border-black/[6%] bg-white px-5 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.04)]"
           >
             <span className="inline-block h-2 w-2 rounded-full bg-brand" />
             <div>
@@ -768,9 +783,9 @@ function ServicesSection() {
     >
       <div className="mx-auto max-w-6xl">
         <SectionHeading
-          kicker="What We Do"
-          title="Collision repair services built around quality work and clear communication."
-          body="From structural repair to refinishing and claim coordination, Nu Finish helps customers move through the repair process with confidence."
+          kicker="Auto Body & Paint Services"
+          title="Collision repair and refinishing services built for fit, finish, and durability."
+          body="From structural correction to panel prep, color match, and final coat, Nu Finish moves each vehicle through a controlled repair and paint process with confidence."
           dark={false}
         />
 
@@ -779,7 +794,7 @@ function ServicesSection() {
             <article
               key={title}
               data-reveal
-              className="tilt-card group rounded-[28px] border border-black/[8%] bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)] hover:shadow-[0_22px_70px_rgba(15,23,42,0.1)]"
+              className="automotive-card tilt-card group rounded-[28px] border border-black/[8%] bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)] hover:shadow-[0_22px_70px_rgba(15,23,42,0.1)]"
               style={motionDelay(index * 90)}
             >
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 text-brand">
@@ -788,6 +803,16 @@ function ServicesSection() {
               <h3 className="mt-5 text-xl font-black text-slate-950">
                 {title}
               </h3>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {SERVICE_TECH_TAGS[title]?.map((tag) => (
+                  <span
+                    key={tag}
+                    className="auto-tech-badge rounded-full border border-black/10 bg-slate-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-slate-700"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
               <p className="mt-3 text-sm leading-7 text-slate-600">{desc}</p>
             </article>
           ))}
@@ -799,13 +824,13 @@ function ServicesSection() {
               Insurance & customer-pay repairs
             </p>
             <h3 className="mt-3 text-2xl font-black">
-              We guide both insurance and customer-pay repairs from intake to
-              pickup.
+              One repair workflow with clear approvals, scheduling, and delivery
+              updates.
             </h3>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
               Insurance work and customer-pay work move through the same repair
-              process. The difference is simply who approves the estimate before
-              repairs begin.
+              workflow. The key difference is simply who approves the estimate
+              before production begins.
             </p>
           </div>
           <CTAGroup compact />
@@ -823,8 +848,8 @@ function ProcessSection() {
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           kicker="Intake & Repair Flow"
-          title="A straightforward repair process from first call to final pickup."
-          body="We believe customers should understand what happens next, who is responsible for approvals, and how the repair moves forward at each stage."
+          title="A production-grade collision and refinish process from first call to final pickup."
+          body="Each job moves through estimate review, repair planning, body correction, paint prep, refinishing, and final QC so customers know exactly what to expect at every stage."
         />
 
         <div
@@ -877,9 +902,12 @@ function ProcessSection() {
             <article
               key={step}
               data-reveal
-              className="rounded-[28px] border border-white/10 bg-white/5 p-5 transition hover:border-brand/40 hover:bg-white/10"
+              className="process-lane-card rounded-[28px] border border-white/10 bg-white/5 p-5 transition hover:border-brand/40 hover:bg-white/10"
               style={motionDelay(index * 100)}
             >
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
+                Stage
+              </p>
               <p className="text-3xl font-black text-brand">{step}</p>
               <h3 className="mt-4 text-lg font-black text-white">{title}</h3>
               <p className="mt-3 text-sm leading-7 text-slate-300">{body}</p>
@@ -909,7 +937,7 @@ function AboutSection() {
           <SectionHeading
             kicker="Our Story"
             title="Serving Garrett County drivers with pride, experience, and personal care."
-            body="For decades, Nu Finish has built its reputation on dependable repair work, straight answers, and a commitment to treating every customer with respect."
+            body="For decades, Nu Finish has built its reputation on dependable collision work, straight answers, and treating every customer with respect."
           />
 
           <div className="mt-8 rounded-[28px] border border-white/10 bg-white/5 p-6">
@@ -926,9 +954,9 @@ function AboutSection() {
             </p>
             <p className="mt-4 text-sm leading-7 text-slate-300">
               John "Grover" Groves is the owner presented on the public site,
-              and the messaging now avoids outdated ownership, certification,
-              and warranty language so customers receive the right information
-              the first time.
+              and the team keeps customer-facing communication current so
+              estimate, certification, and warranty information is clear from
+              the first conversation.
             </p>
           </div>
         </div>
@@ -958,14 +986,13 @@ function AboutSection() {
               Commitment
             </p>
             <p className="mt-4 text-base font-semibold leading-8 text-white">
-              Every vehicle deserves honest communication, careful repair
-              planning, and a finish the customer can drive away feeling
-              confident in.
+              Every vehicle deserves clear communication, disciplined repair
+              planning, and a finish customers can leave with confidence.
             </p>
             <p className="mt-3 text-sm leading-7 text-slate-300">
               From the first conversation to final pickup, the goal is simple:
-              quality repairs, clear expectations, and service customers can
-              trust.
+              quality repairs, accurate expectations, and service customers can
+              trust at every stage.
             </p>
           </div>
         </div>
@@ -1086,7 +1113,7 @@ function FacilitySection() {
         <SectionHeading
           kicker="Facility & Certifications"
           title="The tools, space, and training to handle repairs with confidence."
-          body="Nu Finish combines facility capacity, refinishing certifications, and experienced repair personnel to help customers feel confident in the work being done."
+          body="Nu Finish combines facility capacity, refinishing certifications, and experienced technicians to deliver repeatable quality from structural work through final refinish."
           dark={false}
         />
         <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -1234,7 +1261,7 @@ function GallerySection() {
         <SectionHeading
           kicker="Photo Gallery"
           title="A closer look at the shop, the process, and the work environment."
-          body="These photos give a closer look at the people, spaces, and repair stages that shape the work done every day at Nu Finish."
+          body="These images show the people, equipment, and refinish stages that define daily production at Nu Finish."
           dark={false}
         />
 
@@ -1349,7 +1376,7 @@ function TestimonialsSection() {
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           kicker="Customer Confidence"
-          title="The strongest proof is still the finished vehicle and the customer experience around it."
+          title="The strongest proof is the final fit, finish, and the customer experience around it."
           align="center"
         />
         <div className="mt-10 grid gap-5 lg:grid-cols-2">
@@ -1384,12 +1411,13 @@ function ContactSection() {
             Contact & Intake
           </p>
           <h2 className="mt-4 text-3xl font-black leading-tight md:text-4xl">
-            Call first, stop in, and let the shop guide the process from there.
+            Start with intake and let the team guide estimate, approvals, and
+            production from there.
           </h2>
           <p className="mt-5 max-w-2xl text-sm leading-8 text-slate-300">
             Whether you are working through an insurance claim or paying for a
-            repair directly, the team will walk you through the process and help
-            you understand what comes next.
+            repair directly, the team will walk you through the same structured
+            workflow and explain what happens next.
           </p>
 
           <div className="mt-8 grid gap-4 md:grid-cols-3">
@@ -1417,9 +1445,9 @@ function ContactSection() {
           </p>
           <div className="mt-5 space-y-5 text-sm leading-7 text-slate-600">
             {[
-              "Insurance customers should have claim details available when calling or visiting the shop.",
-              "Customer-pay clients follow the same repair path, but estimate approval comes directly from the customer.",
-              "If your vehicle is not drivable, call the shop so the team can explain the best next step for getting the repair process started.",
+              "Insurance customers should have claim and carrier details ready during intake.",
+              "Customer-pay clients move through the same production workflow, with estimate approval provided directly by the customer.",
+              "If a vehicle is not drivable, call first so the team can coordinate the best next step before arrival.",
             ].map((item, index) => (
               <div
                 key={item}
@@ -1470,9 +1498,9 @@ function Footer() {
             className="h-24 w-24 object-contain drop-shadow-[0_14px_34px_rgba(0,0,0,0.3)]"
           />
           <p className="mt-4 max-w-sm text-sm leading-7 text-slate-400">
-            Our mission is to restore every vehicle with precision, communicate
-            clearly at every step, and deliver repairs customers can trust from
-            intake to pickup.
+            Our mission is to restore every vehicle with accurate body fit,
+            consistent refinish quality, and communication customers can trust
+            from intake through delivery.
           </p>
         </div>
 
@@ -1507,7 +1535,7 @@ function Footer() {
 
       <div className="mx-auto mt-8 max-w-6xl border-t border-white/10 pt-6 text-xs text-slate-500">
         © {new Date().getFullYear()} Nu Finish Collision Center. Serving Garrett
-        County with collision repair, refinishing, and customer care.
+        County with collision repair, refinishing, and customer-focused care.
       </div>
     </footer>
   );
