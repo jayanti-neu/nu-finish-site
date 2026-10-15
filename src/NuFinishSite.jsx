@@ -24,6 +24,7 @@ const MAP_HREF =
 const NAV = [
   ["services", "Services"],
   ["process", "Process"],
+  ["results", "Results"],
   ["about", "About"],
   ["gallery", "Gallery"],
   ["owner", "Owner"],
@@ -169,6 +170,56 @@ const CONTACT_POINTS = [
   { Icon: MapPin, label: "Visit", value: ADDRESS },
   { Icon: Phone, label: "Call", value: PHONE_DISPLAY },
   { Icon: Clock, label: "Hours", value: "Mon-Fri 9:00 AM-5:00 PM" },
+];
+
+// Customer repairs photographed by the shop. Each photo is a 4:3 WebP in two
+// widths (480 and 960) under public/gallery/before-after/<slug>-<stage>-<width>.webp.
+const BEFORE_AFTER = [
+  {
+    slug: "f250",
+    vehicle: "Ford F-250 Super Duty",
+    repair: "Front corner: bumper, fender, and headlight",
+    beforeAlt:
+      "Black Ford F-250 with its front bumper torn away and the front fender crushed around the wheel",
+    afterAlt:
+      "The same Ford F-250 after repair, with a straight bumper, new headlight, and smooth fender",
+  },
+  {
+    slug: "camaro",
+    vehicle: "Chevrolet Camaro",
+    repair: "Front fender and door edge",
+    beforeAlt:
+      "Gray Chevrolet Camaro with a deep crease in the front fender where it meets the door",
+    afterAlt:
+      "The same Camaro after repair, with smooth, matched paint across the fender and door",
+  },
+  {
+    slug: "silverado",
+    vehicle: "Chevrolet Silverado",
+    repair: "Front grille and bumper",
+    beforeAlt:
+      "Black Chevrolet Silverado with a crushed lower grille and bent front bumper",
+    afterAlt:
+      "The same Silverado in the shop after repair, with an aligned grille and straight bumper",
+  },
+  {
+    slug: "wrx",
+    vehicle: "Subaru WRX",
+    repair: "Front bumper and fender",
+    beforeAlt:
+      "Black Subaru WRX with scraped paint and a pushed-in bumper below the headlight",
+    afterAlt:
+      "The same Subaru WRX after repair, with clean bumper and fender lines",
+  },
+  {
+    slug: "murano",
+    vehicle: "Nissan Murano",
+    repair: "Front fender and bumper",
+    beforeAlt:
+      "White Nissan Murano with a dent in the front fender above the wheel",
+    afterAlt:
+      "The same Murano after repair, parked in front of the Nu Finish shop",
+  },
 ];
 
 const GALLERY_IMAGES = [
@@ -595,14 +646,14 @@ function Navbar() {
             <a
               key={id}
               href={`#${id}`}
-              className="nav-link rounded-full px-4 py-2 text-sm font-semibold text-slate-200 transition hover:text-white"
+              className="nav-link whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold text-slate-200 transition hover:text-white lg:px-4"
             >
               {label}
             </a>
           ))}
           <a
             href={PHONE_HREF}
-            className="btn-shine ml-2 rounded-full bg-brand px-4 py-2 text-sm font-black text-black transition hover:bg-brand-hover"
+            className="btn-shine ml-2 whitespace-nowrap rounded-full bg-brand px-4 py-2 text-sm font-black text-black transition hover:bg-brand-hover"
           >
             Call Now
           </a>
@@ -939,6 +990,120 @@ function ProcessSection() {
             team can explain the right next step for your repair.
           </p>
         </div>
+      </div>
+    </section>
+  );
+}
+
+const BEFORE_AFTER_STAGES = [
+  ["before", "Before"],
+  ["after", "After"],
+];
+
+function BeforeAfterCard({ item, featured, index }) {
+  // Phones show one photo at a time with a toggle; wider screens show both.
+  const [stage, setStage] = useState("before");
+  const sizes = featured
+    ? "(min-width: 1152px) 560px, (min-width: 640px) 50vw, 100vw"
+    : "(min-width: 1152px) 280px, (min-width: 640px) 50vw, 100vw";
+
+  return (
+    <article
+      data-reveal
+      className={`overflow-hidden rounded-[28px] border border-black/[8%] bg-white shadow-[0_18px_55px_rgba(15,23,42,0.08)] ${featured ? "lg:col-span-2" : ""}`}
+      style={motionDelay(index * 80)}
+    >
+      <div className="grid gap-px bg-slate-200 sm:grid-cols-2">
+        {BEFORE_AFTER_STAGES.map(([key, label]) => {
+          const base = `/gallery/before-after/${item.slug}-${key}`;
+          return (
+            <figure
+              key={key}
+              className={`relative aspect-[4/3] bg-slate-100 ${stage === key ? "block" : "hidden"} sm:block`}
+            >
+              <img
+                src={`${base}-960.webp`}
+                srcSet={`${base}-480.webp 480w, ${base}-960.webp 960w`}
+                sizes={sizes}
+                width="960"
+                height="720"
+                alt={key === "before" ? item.beforeAlt : item.afterAlt}
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover"
+              />
+              <figcaption
+                className={`absolute left-3 top-3 rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] ${key === "after" ? "bg-brand text-black" : "bg-black/75 text-white"}`}
+              >
+                {label}
+              </figcaption>
+            </figure>
+          );
+        })}
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-black/[6%] px-5 py-4">
+        <div>
+          <h3 className="text-lg font-black text-slate-950">{item.vehicle}</h3>
+          <p className="mt-1 text-sm leading-6 text-slate-600">
+            {item.repair}
+          </p>
+        </div>
+        <div
+          role="group"
+          aria-label={`Show ${item.vehicle} before or after repair`}
+          className="inline-flex rounded-full border border-black/10 bg-slate-100 p-1 sm:hidden"
+        >
+          {BEFORE_AFTER_STAGES.map(([key, label]) => (
+            <button
+              key={key}
+              type="button"
+              aria-pressed={stage === key}
+              onClick={() => setStage(key)}
+              className={`min-h-11 rounded-full px-4 text-sm font-bold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/45 ${stage === key ? "bg-brand text-black" : "text-slate-600"}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function BeforeAfterSection() {
+  return (
+    <section
+      id="results"
+      className="bg-[linear-gradient(180deg,#ffffff,#eef2f6)] px-4 py-18 md:px-6"
+    >
+      <div className="mx-auto max-w-6xl">
+        <SectionHeading
+          kicker="Before & After"
+          title="Real repairs from our shop floor."
+          body="Every vehicle below came through Nu Finish. The shop team photographed each one when it arrived and again when the repair was finished."
+          dark={false}
+        />
+        <div className="mt-10 grid gap-6 lg:grid-cols-2">
+          {BEFORE_AFTER.map((item, index) => (
+            <BeforeAfterCard
+              key={item.slug}
+              item={item}
+              featured={index === 0}
+              index={index}
+            />
+          ))}
+        </div>
+        <p className="mt-8 text-sm leading-7 text-slate-600">
+          Have damage like this?{" "}
+          <a
+            href={PHONE_HREF}
+            className="font-bold text-slate-950 underline decoration-brand decoration-2 underline-offset-4 hover:text-brand-ink"
+          >
+            Call {PHONE_DISPLAY}
+          </a>{" "}
+          to talk through your repair.
+        </p>
       </div>
     </section>
   );
@@ -1699,6 +1864,7 @@ export default function NuFinishSite() {
       <TrustBar />
       <ServicesSection />
       <ProcessSection />
+      <BeforeAfterSection />
       <AboutSection />
       <FacilitySection />
       <GallerySection />

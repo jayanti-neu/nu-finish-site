@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- Before & After section ("Results" in the nav) showing five customer repairs side by side, with a Before/After toggle on phones
 - Automated video processing workflow for compressing and trimming source MOV files into web-ready desktop MP4 and mobile WebP assets
 - Embedded Google map in the contact section to show the shop location directly on the page
 - Dedicated owner spotlight section featuring John Groves and his involvement with local motorsports
