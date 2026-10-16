@@ -1,6 +1,60 @@
-@import url("https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&family=Rajdhani:wght@600;700&display=swap");
-
 @import "tailwindcss";
+
+@font-face {
+  font-family: "Barlow";
+  src: url("/fonts/barlow-400-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Barlow";
+  src: url("/fonts/barlow-500-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Barlow";
+  src: url("/fonts/barlow-600-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Barlow";
+  src: url("/fonts/barlow-700-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Barlow";
+  src: url("/fonts/barlow-800-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Barlow";
+  src: url("/fonts/barlow-900-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Rajdhani";
+  src: url("/fonts/rajdhani-700-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
 
 /* Nu Finish Collision Center brand palette (from logo + race car) */
 @theme {
@@ -22,6 +76,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 80px;
 }
 
 body {
@@ -32,6 +87,29 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+:focus-visible {
+  outline: 3px solid #006db3;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 2px #fff;
+}
+
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  z-index: 100;
+  transform: translateY(-200%);
+  border-radius: 9999px;
+  background: #fff;
+  color: #0f172a;
+  padding: 0.75rem 1rem;
+  font-weight: 800;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
 h1,
 h2,
 h3,
@@ -39,6 +117,12 @@ h3,
 .text-shimmer {
   font-family: var(--font-display);
   letter-spacing: 0.015em;
+}
+
+@media (min-width: 64rem) {
+  .hero-storefront {
+    object-position: center 58%;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -65,7 +149,8 @@ h3,
 
   .theme-shell .bg-white,
   .theme-shell .bg-slate-50,
-  .theme-shell .bg-slate-100 {
+  .theme-shell .bg-slate-100,
+  .theme-shell .bg-slate-200 {
     background-color: rgba(15, 23, 42, 0.82) !important;
   }
 
@@ -78,10 +163,14 @@ h3,
   }
 
   .theme-shell .border-black\/10,
-  .theme-shell .border-black\/8,
-  .theme-shell .border-black\/6,
+  .theme-shell .border-black\/\[8\%\],
+  .theme-shell .border-black\/\[6\%\],
   .theme-shell .border-slate-300 {
     border-color: rgba(148, 163, 184, 0.26) !important;
+  }
+
+  .theme-shell .auto-tech-badge {
+    background-image: none;
   }
 }
 
@@ -139,11 +228,11 @@ h3,
 }
 
 .motion-float {
-  animation: drift 7s ease-in-out infinite;
+  animation: drift 7s ease-in-out 3;
 }
 
 .motion-glow {
-  animation: pulse-glow 4.2s ease-in-out infinite;
+  animation: pulse-glow 4.2s ease-in-out 3;
 }
 
 /* Scroll-triggered reveal — hidden until an IntersectionObserver toggles .in-view */
@@ -171,24 +260,6 @@ h3,
 [data-reveal].in-view {
   opacity: 1;
   transform: none;
-}
-
-/* Slow parallax-style zoom on hero backgrounds */
-@keyframes ken-burns {
-  0% {
-    transform: scale(1.05) translate(0, 0);
-  }
-  50% {
-    transform: scale(1.14) translate(-1.5%, -1%);
-  }
-  100% {
-    transform: scale(1.05) translate(0, 0);
-  }
-}
-
-.ken-burns {
-  animation: ken-burns 26s ease-in-out infinite;
-  transform-origin: center;
 }
 
 /* Animated brand-gradient text sweep */
@@ -332,8 +403,6 @@ h3,
 /* Top-of-page scroll progress track */
 .scroll-progress {
   background: linear-gradient(90deg, #4fd13c 0%, #22a5db 50%, #4fd13c 100%);
-  background-size: 200% 100%;
-  animation: text-shimmer 4s linear infinite;
   transition: width 120ms linear;
 }
 
@@ -466,7 +535,6 @@ h3,
   .motion-card,
   .motion-float,
   .motion-glow,
-  .ken-burns,
   .text-shimmer,
   .marquee-track,
   .scroll-progress,

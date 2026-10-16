@@ -14,6 +14,8 @@ const desktopDir = resolve(sourceDir, "web");
 const mobileDir = resolve(sourceDir, "mobile-webp");
 const DESKTOP_FILTER =
   "scale=1280:720:force_original_aspect_ratio=increase,crop=1280:720,fps=30,format=yuv420p";
+const HDR_DESKTOP_FILTER =
+  "zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv,scale=1280:720:force_original_aspect_ratio=increase,crop=1280:720,fps=30,format=yuv420p";
 const MOBILE_FILTER =
   "scale=360:202:force_original_aspect_ratio=increase,crop=360:202,fps=10";
 
@@ -23,6 +25,7 @@ const clips = [
     slug: "hero-race",
     start: 4,
     duration: 7,
+    hdr: true,
   },
   {
     source: "dirt_race_2.MOV",
@@ -35,12 +38,14 @@ const clips = [
     slug: "paint-color-blend",
     start: 5,
     duration: 6,
+    hdr: true,
   },
   {
     source: "Spraying Clear Coat After Color in the Curtain Booth.MOV",
     slug: "clear-coat-booth",
     start: 7,
     duration: 6,
+    hdr: true,
   },
   {
     source: "WG Motorsports, The Legacy .MOV",
@@ -49,6 +54,17 @@ const clips = [
     duration: 8,
   },
 ];
+
+const missingSources = clips
+  .map((clip) => clip.source)
+  .filter((source) => !existsSync(resolve(sourceDir, source)));
+
+if (missingSources.length > 0) {
+  console.error(
+    `Video processing stopped before changing generated files. Missing sources:\n${missingSources.map((source) => `- ${source}`).join("\n")}`,
+  );
+  process.exit(1);
+}
 
 rmSync(desktopDir, { recursive: true, force: true });
 rmSync(mobileDir, { recursive: true, force: true });
@@ -69,11 +85,6 @@ function runFfmpeg(args, label) {
 
 for (const clip of clips) {
   const sourcePath = resolve(sourceDir, clip.source);
-  if (!existsSync(sourcePath)) {
-    console.warn(`Skipping missing source: ${clip.source}`);
-    continue;
-  }
-
   const desktopOut = resolve(desktopDir, `${clip.slug}.mp4`);
   const webpOut = resolve(mobileDir, `${clip.slug}.webp`);
 
@@ -90,15 +101,25 @@ for (const clip of clips) {
       String(clip.duration),
       "-an",
       "-vf",
-      DESKTOP_FILTER,
+      clip.hdr ? HDR_DESKTOP_FILTER : DESKTOP_FILTER,
       "-c:v",
       "libx264",
       "-preset",
       "slow",
       "-crf",
       "24",
+      "-maxrate",
+      "1.8M",
+      "-bufsize",
+      "3.6M",
       "-movflags",
       "+faststart",
+      "-color_primaries",
+      "bt709",
+      "-color_trc",
+      "bt709",
+      "-colorspace",
+      "bt709",
       desktopOut,
     ],
     `${clip.slug} desktop mp4`,
