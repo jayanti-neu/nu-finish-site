@@ -143,7 +143,8 @@ h3,
 
   .theme-shell .bg-white,
   .theme-shell .bg-slate-50,
-  .theme-shell .bg-slate-100 {
+  .theme-shell .bg-slate-100,
+  .theme-shell .bg-slate-200 {
     background-color: rgba(15, 23, 42, 0.82) !important;
   }
 
@@ -156,10 +157,14 @@ h3,
   }
 
   .theme-shell .border-black\/10,
-  .theme-shell .border-black\/8,
-  .theme-shell .border-black\/6,
+  .theme-shell .border-black\/\[8\%\],
+  .theme-shell .border-black\/\[6\%\],
   .theme-shell .border-slate-300 {
     border-color: rgba(148, 163, 184, 0.26) !important;
+  }
+
+  .theme-shell .auto-tech-badge {
+    background-image: none;
   }
 }
 
@@ -249,24 +254,6 @@ h3,
 [data-reveal].in-view {
   opacity: 1;
   transform: none;
-}
-
-/* Slow parallax-style zoom on hero backgrounds */
-@keyframes ken-burns {
-  0% {
-    transform: scale(1.05) translate(0, 0);
-  }
-  50% {
-    transform: scale(1.14) translate(-1.5%, -1%);
-  }
-  100% {
-    transform: scale(1.05) translate(0, 0);
-  }
-}
-
-.ken-burns {
-  animation: ken-burns 26s ease-in-out infinite;
-  transform-origin: center;
 }
 
 /* Animated brand-gradient text sweep */
@@ -542,7 +529,6 @@ h3,
   .motion-card,
   .motion-float,
   .motion-glow,
-  .ken-burns,
   .text-shimmer,
   .marquee-track,
   .scroll-progress,
