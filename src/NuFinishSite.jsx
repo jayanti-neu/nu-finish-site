@@ -431,11 +431,35 @@ function ResponsiveVideo({ asset, className = "h-full w-full object-cover" }) {
     return () => observer.disconnect();
   }, [isMobile, prefersReducedMotion]);
 
+  useEffect(() => {
+    const video = videoRef.current;
+    if (isMobile !== false || !nearViewport || !video) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (paused) {
+          video.pause();
+        } else if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.05 },
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [isMobile, nearViewport, paused]);
+
   const togglePlayback = () => {
+    if (isMobile) {
+      setPaused((value) => !value);
+      return;
+    }
     const video = videoRef.current;
     if (!video) return;
     if (video.paused) {
-      video.play();
+      video.play().catch(() => {});
       setPaused(false);
     } else {
       video.pause();
@@ -458,14 +482,28 @@ function ResponsiveVideo({ asset, className = "h-full w-full object-cover" }) {
 
   if (isMobile) {
     return (
-      <img
-        src={asset.mobileWebp}
-        alt=""
-        aria-hidden="true"
-        className={className}
-        loading="lazy"
-        decoding="async"
-      />
+      <>
+        <img
+          src={paused ? asset.still : asset.mobileWebp}
+          alt=""
+          aria-hidden="true"
+          className={className}
+          loading="lazy"
+          decoding="async"
+        />
+        <button
+          type="button"
+          onClick={togglePlayback}
+          className="absolute right-3 top-3 z-20 inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/40 bg-black/75 text-white transition hover:bg-black"
+          aria-label={paused ? "Play motion" : "Pause motion"}
+        >
+          {paused ? (
+            <Play className="h-4 w-4" aria-hidden="true" />
+          ) : (
+            <Pause className="h-4 w-4" aria-hidden="true" />
+          )}
+        </button>
+      </>
     );
   }
 
