@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Award,
   Check,
@@ -15,6 +15,7 @@ import {
   ShieldCheck,
   Wrench,
   X,
+  ZoomIn,
 } from "lucide-react";
 
 const PHONE_DISPLAY = "(301) 334-4727";
@@ -219,15 +220,17 @@ const BEFORE_AFTER = [
   },
 ];
 
+// One frame shape for every photo keeps rows even. The first photo spans the
+// full width on large screens; 1 wide + 9 photos fills 3 columns evenly, and
+// 10 photos fill 2 columns evenly.
 const GALLERY_IMAGES = [
   {
-    src: "/gallery/front-of-building.webp",
-    alt: "Front of the Nu Finish Collision Center building",
-    title: "Front Building",
+    src: "/gallery/body-side-of-shop.webp",
+    alt: "Body side work area of the Nu Finish shop",
+    title: "Body Repair Area",
     caption:
-      "The Maryland Highway location serves customers throughout Garrett County and beyond.",
-    layout: "sm:col-span-2 xl:col-span-3",
-    frame: "aspect-[21/9]",
+      "Body repair space is organized to keep each job moving through the right sequence.",
+    featured: true,
   },
   {
     src: "/gallery/grover-mixing-paint.webp",
@@ -235,7 +238,7 @@ const GALLERY_IMAGES = [
     title: "Color Mixing",
     caption:
       "Careful paint mixing helps every refinishing job start with accuracy.",
-    frame: "aspect-[4/5]",
+    focus: "50% 22%",
   },
   {
     src: "/gallery/grover-mixing-paint-2.webp",
@@ -243,7 +246,7 @@ const GALLERY_IMAGES = [
     title: "Paint Bench",
     caption:
       "Color match work is handled deliberately so panels blend cleanly and consistently.",
-    frame: "aspect-[4/5]",
+    focus: "50% 40%",
   },
   {
     src: "/gallery/hood-in-sealer-before-spraying-color.webp",
@@ -251,46 +254,7 @@ const GALLERY_IMAGES = [
     title: "Pre-Paint Prep",
     caption:
       "Preparation work sets the stage for a cleaner, more consistent finish.",
-    frame: "aspect-[4/3]",
-  },
-  {
-    src: "/gallery/fresh-clean-paint-booth.webp",
-    alt: "Clean paint booth prepared for refinishing work",
-    title: "Paint Booth",
-    caption:
-      "A dedicated paint booth is used during refinishing.",
-    frame: "aspect-[4/3]",
-  },
-  {
-    src: "/gallery/curtain-paint-booth.webp",
-    alt: "Curtain paint booth area inside Nu Finish",
-    title: "Repair Steps",
-    caption:
-      "Dedicated work zones help the team move vehicles through each repair stage efficiently.",
-    frame: "aspect-[4/3]",
-  },
-  {
-    src: "/gallery/side-down-draft-paint-booth.webp",
-    alt: "Side down draft paint booth at Nu Finish",
-    title: "Down Draft Booth",
-    caption:
-      "Ventilation and booth layout help maintain a cleaner refinishing environment.",
-    frame: "aspect-[4/3]",
-  },
-  {
-    src: "/gallery/parts-bay.webp",
-    alt: "Parts bay with organized parts and components for repairs",
-    title: "Parts & Coordination",
-    caption: "Organized parts handling helps keep repair schedules on track.",
-    frame: "aspect-[4/3]",
-  },
-  {
-    src: "/gallery/primer.webp",
-    alt: "Vehicle panel in primer during the refinishing process",
-    title: "Refinish Stages",
-    caption:
-      "Each stage of refinishing is handled with attention to detail from start to finish.",
-    frame: "aspect-[4/3]",
+    focus: "50% 60%",
   },
   {
     src: "/gallery/grover-beginning-to-clear-a-vehicle.webp",
@@ -298,15 +262,41 @@ const GALLERY_IMAGES = [
     title: "Final Coats",
     caption:
       "Final stages are completed with steady process control before delivery prep.",
-    frame: "aspect-[4/5]",
+    focus: "50% 62%",
   },
   {
-    src: "/gallery/body-side-of-shop.webp",
-    alt: "Body side work area of the Nu Finish shop",
-    title: "Body Repair Area",
+    src: "/gallery/primer.webp",
+    alt: "Vehicle panel in primer during the refinishing process",
+    title: "Refinish Stages",
     caption:
-      "Body repair space is organized to keep each job moving through the right sequence.",
-    frame: "aspect-[4/3]",
+      "Each stage of refinishing is handled with attention to detail from start to finish.",
+  },
+  {
+    src: "/gallery/fresh-clean-paint-booth.webp",
+    alt: "Clean paint booth prepared for refinishing work",
+    title: "Paint Booth",
+    caption:
+      "A dedicated paint booth is used during refinishing.",
+  },
+  {
+    src: "/gallery/curtain-paint-booth.webp",
+    alt: "Curtain paint booth area inside Nu Finish",
+    title: "Repair Steps",
+    caption:
+      "Dedicated work zones help the team move vehicles through each repair stage efficiently.",
+  },
+  {
+    src: "/gallery/side-down-draft-paint-booth.webp",
+    alt: "Side down draft paint booth at Nu Finish",
+    title: "Down Draft Booth",
+    caption:
+      "Ventilation and booth layout help maintain a cleaner refinishing environment.",
+  },
+  {
+    src: "/gallery/parts-bay.webp",
+    alt: "Parts bay with organized parts and components for repairs",
+    title: "Parts & Coordination",
+    caption: "Organized parts handling helps keep repair schedules on track.",
   },
 ];
 
@@ -861,32 +851,56 @@ function Navbar() {
   );
 }
 
+const HERO_FACTS = [
+  ["Since 1986", "Serving Garrett County"],
+  ["Valspar & DeBeer", "Certified refinishing"],
+  ["1-year", "Paint warranty"],
+  ["9 AM–5 PM", "Open Mon–Fri"],
+];
+
+const HERO_HIGHLIGHTS = [
+  ["Damage Review", "Inspection and repair planning"],
+  ["Color Match", "Valspar & DeBeer certified refinishing"],
+  ["Before Pickup", "Final inspection with 1-year paint warranty"],
+];
+
+// 1×1 transparent GIF so a <picture> whose <source> doesn't match downloads nothing.
+const BLANK_IMG =
+  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+
 function Hero() {
+  // Phones (<768px): solid background with the full storefront photo below
+  // the buttons. Tablet and desktop (≥768px): storefront photo behind the text.
+  // Each layout's photo only downloads at its own screen size.
   return (
     <section
       id="top"
-      className="relative overflow-hidden border-b border-white/10 bg-black text-white"
+      className="relative overflow-hidden border-b border-white/10 bg-[#05070d] text-white md:bg-black"
     >
-      <div className="absolute inset-0">
-        <img
-          src={VIDEO_ASSETS.hero.still}
-          alt=""
-          aria-hidden="true"
-          className="hero-storefront absolute inset-0 h-full w-full object-cover opacity-60"
-        />
-        <div
-          className="shop-floor-overlay absolute inset-0"
-          aria-hidden="true"
-        />
+      <div className="absolute inset-0 md:hidden" aria-hidden="true">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,_rgba(79,209,60,0.20),_transparent_42%),radial-gradient(circle_at_100%_100%,_rgba(34,165,219,0.12),_transparent_40%)]" />
+        <div className="shop-floor-overlay absolute inset-0 opacity-40" />
+      </div>
+
+      <div className="absolute inset-0 hidden md:block" aria-hidden="true">
+        <picture>
+          <source media="(min-width: 768px)" srcSet={VIDEO_ASSETS.hero.still} />
+          <img
+            src={BLANK_IMG}
+            alt=""
+            fetchPriority="high"
+            className="hero-storefront absolute inset-0 h-full w-full object-cover opacity-60"
+          />
+        </picture>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(79,209,60,0.22),_transparent_36%),linear-gradient(135deg,_rgba(0,0,0,0.66),_rgba(0,0,0,0.44)_55%,_rgba(34,165,219,0.10))]" />
       </div>
 
-      <div className="relative mx-auto grid max-w-6xl gap-12 px-4 py-14 md:grid-cols-[1.15fr_0.85fr] md:px-6 md:py-24 lg:grid-cols-[1.35fr_0.65fr]">
+      <div className="relative mx-auto grid max-w-6xl gap-12 px-4 pb-12 pt-10 md:grid-cols-[1.15fr_0.85fr] md:px-6 md:py-24 lg:grid-cols-[1.35fr_0.65fr]">
         <div className="motion-enter" style={motionDelay(0)}>
-          <div className="motion-glow mb-5 inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-brand">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-brand motion-glow">
             Oakland, MD • Since 1986
           </div>
-          <h1 className="text-shimmer max-w-3xl text-[2.1rem] font-black leading-[1.02] md:text-5xl">
+          <h1 className="text-shimmer max-w-3xl text-[2rem] font-black leading-[1.05] md:text-5xl md:leading-[1.02]">
             Auto body collision and refinishing built on precise body fit,
             controlled paint work, and hometown trust.
           </h1>
@@ -895,19 +909,50 @@ function Hero() {
             keep you updated from start to finish.
           </p>
 
-          <div className="motion-enter" style={motionDelay(180)}>
+          <div className="motion-enter" style={motionDelay(160)}>
             <CTAGroup />
           </div>
 
-          <div className="mt-10 grid gap-3 sm:grid-cols-3">
-            {[
-                ["Damage Review", "Inspection and repair planning"],
-              ["Color Match", "Valspar & DeBeer certified refinishing"],
-              [
-                  "Before Pickup",
-                "Final inspection with 1-year paint warranty",
-              ],
-            ].map(([label, item], index) => (
+          <figure className="mt-8 overflow-hidden rounded-[28px] border border-white/15 bg-slate-900 shadow-[0_30px_90px_rgba(0,0,0,0.45)] md:hidden">
+            <picture>
+              <source
+                media="(max-width: 767px)"
+                srcSet="/gallery/front-of-building-800.webp"
+              />
+              <img
+                src={BLANK_IMG}
+                width="800"
+                height="600"
+                alt="The Nu Finish Collision Center building on Maryland Highway, with the shop sign above the front door"
+                fetchPriority="high"
+                className="aspect-[4/3] h-auto w-full object-cover"
+              />
+            </picture>
+            <figcaption className="flex items-center gap-2 border-t border-white/10 px-5 py-3 text-sm text-slate-300">
+              <MapPin
+                className="h-4 w-4 shrink-0 text-brand"
+                aria-hidden="true"
+              />
+              {ADDRESS}
+            </figcaption>
+          </figure>
+
+          <dl className="mt-6 grid grid-cols-2 gap-3 md:hidden">
+            {HERO_FACTS.map(([value, label]) => (
+              <div
+                key={label}
+                className="rounded-2xl border border-white/10 bg-white/[4%] px-4 py-3"
+              >
+                <dt className="text-xs leading-5 text-slate-400">{label}</dt>
+                <dd className="mt-1 text-base font-black leading-6 text-white">
+                  {value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+
+          <div className="mt-10 hidden grid-cols-3 gap-3 md:grid">
+            {HERO_HIGHLIGHTS.map(([label, item], index) => (
               <div
                 key={item}
                 className="motion-card rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-slate-200"
@@ -926,31 +971,7 @@ function Hero() {
           </div>
         </div>
 
-        <div className="grid gap-4 self-end">
-          <div
-            className="motion-card motion-float rounded-[28px] border border-white/10 bg-white/[6%] p-6 shadow-[0_20px_80px_rgba(0,0,0,0.35)] backdrop-blur"
-            style={motionDelay(160)}
-          >
-            <p className="text-[11px] uppercase tracking-[0.28em] text-slate-400">
-              At a glance
-            </p>
-            <div className="mt-5 grid grid-cols-2 gap-4">
-              {[
-                ["Since 1986", "Serving local drivers"],
-                ["Certified", "Valspar & DeBeer"],
-                ["1 Year", "Paint warranty"],
-                ["9 AM–5 PM", "Mon–Fri"],
-              ].map(([value, label]) => (
-                <div key={label} className="rounded-2xl bg-black/35 p-4">
-                  <p className="text-2xl font-black text-white">{value}</p>
-                  <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-400">
-                    {label}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-
+        <div className="hidden gap-4 self-end md:grid">
           <div
             className="motion-card rounded-[28px] border border-brand/25 bg-brand/10 p-6 text-sm leading-7 text-slate-100"
             style={motionDelay(280)}
@@ -1165,7 +1186,218 @@ const BEFORE_AFTER_STAGES = [
   ["after", "After"],
 ];
 
-function BeforeAfterCard({ item, featured, index, hiddenOnMobile = false }) {
+const beforeAfterSrc = (slug, stage, width) =>
+  `/gallery/before-after/${slug}-${stage}-${width}.webp`;
+
+function StageBadge({ stage, label }) {
+  return (
+    <span
+      className={`pointer-events-none absolute left-3 top-3 z-10 rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] ${stage === "after" ? "bg-brand text-black" : "bg-black/75 text-white"}`}
+    >
+      {label}
+    </span>
+  );
+}
+
+function ZoomablePhoto({ src, alt, stage, label }) {
+  // Click or tap to zoom to 2.5x around that point; moving the mouse pans.
+  // Pinch-zoom on phones still works on top of this.
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const [zoomed, setZoomed] = useState(false);
+  const [origin, setOrigin] = useState("50% 50%");
+
+  const originFromEvent = (event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    if (!rect.width || !rect.height || event.clientX === 0) return "50% 50%";
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+    return `${Math.min(100, Math.max(0, x))}% ${Math.min(100, Math.max(0, y))}%`;
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={(event) => {
+        if (!zoomed) setOrigin(originFromEvent(event));
+        setZoomed((value) => !value);
+      }}
+      onPointerMove={(event) => {
+        if (zoomed && event.pointerType === "mouse") {
+          setOrigin(originFromEvent(event));
+        }
+      }}
+      aria-label={`${zoomed ? "Zoom out of" : "Zoom in on"} the ${label.toLowerCase()} photo`}
+      className={`relative block h-full w-full overflow-hidden bg-black focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-brand ${zoomed ? "cursor-zoom-out" : "cursor-zoom-in"}`}
+    >
+      <img
+        src={src}
+        alt={alt}
+        decoding="async"
+        draggable="false"
+        className={`h-full w-full select-none object-contain ${prefersReducedMotion ? "" : "transition-transform duration-200 ease-out"}`}
+        style={{
+          transform: zoomed ? "scale(2.5)" : "scale(1)",
+          transformOrigin: origin,
+        }}
+      />
+      <StageBadge stage={stage} label={label} />
+    </button>
+  );
+}
+
+function BeforeAfterViewer({ index, stage, onStage, onNavigate, onClose }) {
+  const item = BEFORE_AFTER[index];
+  const dialogRef = useRef(null);
+  const closeButtonRef = useRef(null);
+  const titleId = "before-after-viewer-title";
+
+  useEffect(() => {
+    closeButtonRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") {
+        onClose();
+      } else if (event.key === "ArrowRight") {
+        onNavigate(1);
+      } else if (event.key === "ArrowLeft") {
+        onNavigate(-1);
+      } else if (event.key === "Tab") {
+        const focusable = [
+          ...(dialogRef.current?.querySelectorAll(
+            'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+          ) ?? []),
+        ].filter((element) => element.offsetParent !== null);
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    const { body } = document;
+    const previousOverflow = body.style.overflow;
+    body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [onClose, onNavigate]);
+
+  const navButton =
+    "inline-flex min-h-11 items-center gap-2 rounded-full border border-white/25 bg-white/5 px-4 text-sm font-semibold text-white transition hover:bg-white/15 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/60";
+
+  return (
+    <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+      className="fixed inset-0 z-[95] flex flex-col bg-slate-950 text-white"
+      onClick={onClose}
+    >
+      <div
+        className="mx-auto flex h-full w-full max-w-7xl flex-col gap-3 p-3 md:gap-4 md:p-6"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-[0.24em] text-brand">
+              Before & After · {index + 1} of {BEFORE_AFTER.length}
+            </p>
+            <h3 id={titleId} className="mt-1 text-xl font-black md:text-2xl">
+              {item.vehicle}
+            </h3>
+            <p className="text-sm text-slate-300">{item.repair}</p>
+          </div>
+          <button
+            ref={closeButtonRef}
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/30 bg-black/40 text-white transition hover:bg-black/70 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/60"
+            aria-label="Close before and after viewer"
+          >
+            <X className="h-5 w-5" aria-hidden="true" />
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between gap-3 md:hidden">
+        <div
+          role="group"
+          aria-label="Show before or after repair"
+          className="inline-flex rounded-full border border-white/15 bg-white/5 p-1"
+        >
+          {BEFORE_AFTER_STAGES.map(([key, label]) => (
+            <button
+              key={key}
+              type="button"
+              aria-pressed={stage === key}
+              onClick={() => onStage(key)}
+              className={`min-h-11 rounded-full px-5 text-sm font-bold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/60 ${stage === key ? "bg-brand text-black" : "text-slate-200"}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+          <p className="text-xs text-slate-400">Tap a photo to zoom</p>
+        </div>
+
+        <div className="grid min-h-0 flex-1 content-center gap-2 md:grid-cols-2 md:gap-3">
+          {BEFORE_AFTER_STAGES.map(([key, label]) => (
+            <div
+              key={`${item.slug}-${key}`}
+              className={`mx-auto aspect-[4/3] max-h-full w-full max-w-[calc((100dvh-15rem)*4/3)] overflow-hidden rounded-2xl border border-white/10 ${stage === key ? "block" : "hidden"} md:block`}
+            >
+              <ZoomablePhoto
+                src={beforeAfterSrc(item.slug, key, 1600)}
+                alt={key === "before" ? item.beforeAlt : item.afterAlt}
+                stage={key}
+                label={label}
+              />
+            </div>
+          ))}
+        </div>
+
+        <div className="flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => onNavigate(-1)}
+            className={navButton}
+            aria-label="Previous vehicle"
+          >
+            <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+            <span>
+              Previous<span className="hidden md:inline"> vehicle</span>
+            </span>
+          </button>
+          <p className="hidden text-sm text-slate-400 md:block">
+            Click a photo to zoom in. Use ← → to switch vehicles.
+          </p>
+          <button
+            type="button"
+            onClick={() => onNavigate(1)}
+            className={navButton}
+            aria-label="Next vehicle"
+          >
+            <span>
+              Next<span className="hidden md:inline"> vehicle</span>
+            </span>
+            <ChevronRight className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BeforeAfterCard({ item, featured, index, hiddenOnMobile = false, onOpen }) {
   // Phones show one photo at a time with a toggle; wider screens show both.
   const [stage, setStage] = useState("before");
   const sizes = featured
@@ -1179,32 +1411,36 @@ function BeforeAfterCard({ item, featured, index, hiddenOnMobile = false }) {
       style={motionDelay(index * 80)}
     >
       <div className="grid gap-px bg-slate-200 sm:grid-cols-2">
-        {BEFORE_AFTER_STAGES.map(([key, label]) => {
-          const base = `/gallery/before-after/${item.slug}-${key}`;
-          return (
-            <figure
-              key={key}
-              className={`relative aspect-[4/3] bg-slate-100 ${stage === key ? "block" : "hidden"} sm:block`}
+        {BEFORE_AFTER_STAGES.map(([key, label]) => (
+          <figure
+            key={key}
+            className={`group relative aspect-[4/3] bg-slate-100 ${stage === key ? "block" : "hidden"} sm:block`}
+          >
+            <button
+              type="button"
+              onClick={(event) => onOpen(index, key, event.currentTarget)}
+              className="block h-full w-full cursor-zoom-in overflow-hidden focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-brand"
+              aria-label={`Enlarge the ${label.toLowerCase()} photo of the ${item.vehicle}`}
             >
               <img
-                src={`${base}-960.webp`}
-                srcSet={`${base}-480.webp 480w, ${base}-960.webp 960w`}
+                src={beforeAfterSrc(item.slug, key, 960)}
+                srcSet={`${beforeAfterSrc(item.slug, key, 480)} 480w, ${beforeAfterSrc(item.slug, key, 960)} 960w`}
                 sizes={sizes}
                 width="960"
                 height="720"
                 alt={key === "before" ? item.beforeAlt : item.afterAlt}
                 loading="lazy"
                 decoding="async"
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover transition duration-500 ease-out group-hover:scale-[1.03]"
               />
-              <figcaption
-                className={`absolute left-3 top-3 rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] ${key === "after" ? "bg-brand text-black" : "bg-black/75 text-white"}`}
-              >
-                {label}
-              </figcaption>
-            </figure>
-          );
-        })}
+              <span className="pointer-events-none absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-black/70 px-3 py-1.5 text-xs font-bold text-white">
+                <ZoomIn className="h-3.5 w-3.5" aria-hidden="true" />
+                Zoom
+              </span>
+            </button>
+            <StageBadge stage={key} label={label} />
+          </figure>
+        ))}
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-black/[6%] px-5 py-4">
@@ -1238,6 +1474,32 @@ function BeforeAfterCard({ item, featured, index, hiddenOnMobile = false }) {
 
 function BeforeAfterSection() {
   const [showAllResults, setShowAllResults] = useState(false);
+  const [viewer, setViewer] = useState(null);
+  const openerRef = useRef(null);
+
+  const openViewer = useCallback((index, stage, opener) => {
+    openerRef.current = opener;
+    setViewer({ index, stage });
+  }, []);
+  const closeViewer = useCallback(() => {
+    setViewer(null);
+    window.requestAnimationFrame(() => openerRef.current?.focus());
+  }, []);
+  const navigateViewer = useCallback((step) => {
+    setViewer((current) =>
+      current
+        ? {
+            ...current,
+            index:
+              (current.index + step + BEFORE_AFTER.length) %
+              BEFORE_AFTER.length,
+          }
+        : current,
+    );
+  }, []);
+  const setViewerStage = useCallback((stage) => {
+    setViewer((current) => (current ? { ...current, stage } : current));
+  }, []);
 
   return (
     <section
@@ -1248,7 +1510,7 @@ function BeforeAfterSection() {
         <SectionHeading
           kicker="Before & After"
           title="Real repairs from our shop floor."
-          body="Every vehicle below came through Nu Finish. The shop team photographed each one when it arrived and again when the repair was finished."
+          body="Every vehicle below came through Nu Finish. The shop team photographed each one when it arrived and again when the repair was finished. Select any photo to see it larger."
           dark={false}
         />
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
@@ -1259,6 +1521,7 @@ function BeforeAfterSection() {
               featured={index === 0}
               index={index}
               hiddenOnMobile={index >= 3 && !showAllResults}
+              onOpen={openViewer}
             />
           ))}
         </div>
@@ -1282,6 +1545,16 @@ function BeforeAfterSection() {
           to talk through your repair.
         </p>
       </div>
+
+      {viewer ? (
+        <BeforeAfterViewer
+          index={viewer.index}
+          stage={viewer.stage}
+          onStage={setViewerStage}
+          onNavigate={navigateViewer}
+          onClose={closeViewer}
+        />
+      ) : null}
     </section>
   );
 }
@@ -1689,24 +1962,26 @@ function GallerySection() {
 
         <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-3">
           {GALLERY_IMAGES.map(
-            ({ src, alt, title, caption, layout, frame }, index) => (
+            ({ src, alt, title, caption, featured, focus }, index) => (
               <figure
                 key={src}
                 data-reveal={index % 2 === 0 ? "left" : "right"}
-                className={`group overflow-hidden rounded-[22px] border border-black/[8%] bg-white shadow-[0_18px_55px_rgba(15,23,42,0.08)] sm:rounded-[30px] ${index >= 6 && !showAllPhotos ? "max-sm:hidden" : ""} ${layout ?? ""}`}
+                className={`group overflow-hidden rounded-[22px] border border-black/[8%] bg-white shadow-[0_18px_55px_rgba(15,23,42,0.08)] sm:rounded-[30px] ${index >= 6 && !showAllPhotos ? "max-sm:hidden" : ""} ${featured ? "xl:col-span-3" : ""}`}
                 style={motionDelay(index * 80)}
               >
                 <button
                   type="button"
                   onClick={(event) => openImage(index, event)}
-                  className={`relative block w-full cursor-zoom-in overflow-hidden text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/45 ${frame ?? "aspect-[4/3]"}`}
+                  className={`relative block w-full cursor-zoom-in overflow-hidden text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/45 ${featured ? "aspect-[4/3] xl:aspect-[21/9]" : "aspect-[4/3]"}`}
                   aria-label={`Open ${title} photo`}
                 >
                   <img
                     src={src}
                     alt={alt}
                     loading="lazy"
+                    decoding="async"
                     className="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.04]"
+                    style={focus ? { objectPosition: focus } : undefined}
                   />
                 </button>
                 <figcaption className="border-t border-black/[6%] px-3 py-3 sm:px-5 sm:py-4">
