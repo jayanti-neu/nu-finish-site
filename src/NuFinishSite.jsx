@@ -8,7 +8,9 @@ import {
   Leaf,
   Lock,
   MapPin,
+  Pause,
   Phone,
+  Play,
   Ruler,
   ShieldCheck,
   Wrench,
@@ -388,6 +390,154 @@ function usePrefersReducedMotion() {
   return reduced;
 }
 
+function useMediaQuery(query) {
+  const [matches, setMatches] = useState(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mediaQuery = window.matchMedia(query);
+    const update = () => setMatches(mediaQuery.matches);
+    update();
+    mediaQuery.addEventListener("change", update);
+    return () => mediaQuery.removeEventListener("change", update);
+  }, [query]);
+
+  return matches;
+}
+
+function ResponsiveVideo({ asset, className = "h-full w-full object-cover" }) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const isMobile = useMediaQuery("(max-width: 767px)");
+  const [nearViewport, setNearViewport] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    if (isMobile !== false || prefersReducedMotion || !videoRef.current) return;
+    if (!("IntersectionObserver" in window)) {
+      const timer = window.setTimeout(() => setNearViewport(true), 0);
+      return () => window.clearTimeout(timer);
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setNearViewport(true);
+        observer.disconnect();
+      },
+      { rootMargin: "500px 0px", threshold: 0.01 },
+    );
+    observer.observe(videoRef.current);
+    return () => observer.disconnect();
+  }, [isMobile, prefersReducedMotion]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (isMobile !== false || !nearViewport || !video) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (paused) {
+          video.pause();
+        } else if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.05 },
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [isMobile, nearViewport, paused]);
+
+  const togglePlayback = () => {
+    if (isMobile) {
+      setPaused((value) => !value);
+      return;
+    }
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) {
+      video.play().catch(() => {});
+      setPaused(false);
+    } else {
+      video.pause();
+      setPaused(true);
+    }
+  };
+
+  if (prefersReducedMotion || isMobile === null) {
+    return (
+      <img
+        src={asset.still}
+        alt=""
+        aria-hidden="true"
+        className={className}
+        loading="lazy"
+        decoding="async"
+      />
+    );
+  }
+
+  if (isMobile) {
+    return (
+      <>
+        <img
+          src={paused ? asset.still : asset.mobileWebp}
+          alt=""
+          aria-hidden="true"
+          className={className}
+          loading="lazy"
+          decoding="async"
+        />
+        <button
+          type="button"
+          onClick={togglePlayback}
+          className="absolute right-3 top-3 z-20 inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/40 bg-black/75 text-white transition hover:bg-black"
+          aria-label={paused ? "Play motion" : "Pause motion"}
+        >
+          {paused ? (
+            <Play className="h-4 w-4" aria-hidden="true" />
+          ) : (
+            <Pause className="h-4 w-4" aria-hidden="true" />
+          )}
+        </button>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <video
+        ref={videoRef}
+        className={className}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload={nearViewport ? "metadata" : "none"}
+        poster={asset.still}
+        aria-hidden="true"
+      >
+        {nearViewport ? <source src={asset.desktop} type="video/mp4" /> : null}
+      </video>
+      <button
+        type="button"
+        onClick={togglePlayback}
+        className="absolute right-3 top-3 z-20 inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/40 bg-black/75 text-white transition hover:bg-black"
+        aria-label={paused ? "Play video" : "Pause video"}
+      >
+        {paused ? (
+          <Play className="h-4 w-4" aria-hidden="true" />
+        ) : (
+          <Pause className="h-4 w-4" aria-hidden="true" />
+        )}
+      </button>
+    </>
+  );
+}
+
 function ScrollProgress() {
   const [pct, setPct] = useState(0);
   useEffect(() => {
@@ -416,7 +566,7 @@ function ScrollProgress() {
 function SprayGunIcon({ className }) {
   return (
     <img
-      src="/spraygun.png"
+      src="/spraygun-96.webp"
       alt=""
       className={className}
       aria-hidden="true"
@@ -651,7 +801,7 @@ function Navbar() {
           aria-label="Nu Finish home"
         >
           <img
-            src="/nufinish-wordmark-transparent.png"
+            src="/nufinish-wordmark-360.webp"
             alt="Nu Finish Collision Center"
             className="h-10 w-auto drop-shadow-[0_10px_26px_rgba(0,0,0,0.35)]"
           />
@@ -927,8 +1077,6 @@ function ServicesSection() {
 }
 
 function ProcessSection() {
-  const prefersReducedMotion = usePrefersReducedMotion();
-
   return (
     <section id="process" className="bg-black px-4 py-18 text-white md:px-6">
       <div className="mx-auto max-w-6xl">
@@ -944,35 +1092,7 @@ function ProcessSection() {
           style={motionDelay(60)}
         >
           <div className="relative aspect-[16/8] w-full">
-            {prefersReducedMotion ? (
-              <img
-                src={VIDEO_ASSETS.process.still}
-                alt=""
-                aria-hidden="true"
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <>
-                <img
-                  src={VIDEO_ASSETS.process.mobileWebp}
-                  alt=""
-                  aria-hidden="true"
-                  className="h-full w-full object-cover md:hidden"
-                />
-                <video
-                  className="hidden h-full w-full object-cover md:block"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  preload="metadata"
-                  poster={VIDEO_ASSETS.process.still}
-                  aria-hidden="true"
-                >
-                  <source src={VIDEO_ASSETS.process.desktop} type="video/mp4" />
-                </video>
-              </>
-            )}
+            <ResponsiveVideo asset={VIDEO_ASSETS.process} />
             <div className="absolute inset-0 hidden bg-gradient-to-t from-black/90 via-black/55 to-transparent md:block" />
             <div className="absolute inset-0 flex items-end p-7 max-md:hidden">
               <p className="max-w-2xl text-base font-semibold leading-7 text-white">
@@ -1026,8 +1146,8 @@ function BeforeAfterCard({ item, featured, index }) {
   // Phones show one photo at a time with a toggle; wider screens show both.
   const [stage, setStage] = useState("before");
   const sizes = featured
-    ? "(min-width: 1152px) 560px, (min-width: 640px) 50vw, 100vw"
-    : "(min-width: 1152px) 280px, (min-width: 640px) 50vw, 100vw";
+    ? "(min-width: 1152px) 560px, (min-width: 1024px) 50vw, (min-width: 640px) 50vw, 100vw"
+    : "(min-width: 1152px) 280px, (min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw";
 
   return (
     <article
@@ -1144,7 +1264,7 @@ function AboutSection() {
 
           <div className="mt-8 rounded-[28px] border border-white/10 bg-white/5 p-6">
             <img
-              src="/nufinish-logo.png"
+              src="/nufinish-logo-224.webp"
               alt="Nu Finish Collision Center logo"
               className="h-28 w-auto drop-shadow-[0_14px_30px_rgba(0,0,0,0.28)]"
             />
@@ -1203,8 +1323,6 @@ function AboutSection() {
 }
 
 function OwnerSpotlightSection() {
-  const prefersReducedMotion = usePrefersReducedMotion();
-
   return (
     <section
       id="owner"
@@ -1225,38 +1343,7 @@ function OwnerSpotlightSection() {
             style={motionDelay(40)}
           >
             <div className="relative aspect-[16/9] w-full">
-              {prefersReducedMotion ? (
-                <img
-                  src={VIDEO_ASSETS.motorsports.still}
-                  alt=""
-                  aria-hidden="true"
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <>
-                  <img
-                    src={VIDEO_ASSETS.motorsports.mobileWebp}
-                    alt=""
-                    aria-hidden="true"
-                    className="h-full w-full object-cover md:hidden"
-                  />
-                  <video
-                    className="hidden h-full w-full object-cover md:block"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    preload="metadata"
-                    poster={VIDEO_ASSETS.motorsports.still}
-                    aria-hidden="true"
-                  >
-                    <source
-                      src={VIDEO_ASSETS.motorsports.desktop}
-                      type="video/mp4"
-                    />
-                  </video>
-                </>
-              )}
+              <ResponsiveVideo asset={VIDEO_ASSETS.motorsports} />
               <div className="absolute inset-0 hidden bg-gradient-to-t from-black/90 via-black/55 to-transparent md:block" />
               <div className="absolute inset-x-0 bottom-0 hidden p-6 md:block">
                 <p className="inline-flex rounded-full bg-black/80 px-3 py-1 text-[11px] font-black uppercase tracking-[0.24em] text-brand">
@@ -1320,35 +1407,7 @@ function OwnerSpotlightSection() {
                   className="overflow-hidden rounded-2xl border border-black/12 bg-slate-950"
                 >
                   <div className="relative aspect-[4/3] w-full">
-                    {prefersReducedMotion ? (
-                      <img
-                        src={asset.still}
-                        alt=""
-                        aria-hidden="true"
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <>
-                        <img
-                          src={asset.mobileWebp}
-                          alt=""
-                          aria-hidden="true"
-                          className="h-full w-full object-cover md:hidden"
-                        />
-                        <video
-                          className="hidden h-full w-full object-cover md:block"
-                          autoPlay
-                          loop
-                          muted
-                          playsInline
-                          preload="metadata"
-                          poster={asset.still}
-                          aria-hidden="true"
-                        >
-                          <source src={asset.desktop} type="video/mp4" />
-                        </video>
-                      </>
-                    )}
+                    <ResponsiveVideo asset={asset} />
                   </div>
                   <div className="border-t border-white/10 px-3 py-2 text-white">
                     <p className="text-[10px] font-black uppercase tracking-[0.16em] text-brand">
@@ -1369,8 +1428,6 @@ function OwnerSpotlightSection() {
 }
 
 function FacilitySection() {
-  const prefersReducedMotion = usePrefersReducedMotion();
-
   return (
     <section className="bg-slate-950 px-4 py-18 text-white md:px-6">
       <div className="mx-auto max-w-6xl">
@@ -1386,38 +1443,7 @@ function FacilitySection() {
           style={motionDelay(30)}
         >
           <div className="relative aspect-[16/7] w-full">
-            {prefersReducedMotion ? (
-              <img
-                src={VIDEO_ASSETS.facility.still}
-                alt=""
-                aria-hidden="true"
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <>
-                <img
-                  src={VIDEO_ASSETS.facility.mobileWebp}
-                  alt=""
-                  aria-hidden="true"
-                  className="h-full w-full object-cover md:hidden"
-                />
-                <video
-                  className="hidden h-full w-full object-cover md:block"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  preload="metadata"
-                  poster={VIDEO_ASSETS.facility.still}
-                  aria-hidden="true"
-                >
-                  <source
-                    src={VIDEO_ASSETS.facility.desktop}
-                    type="video/mp4"
-                  />
-                </video>
-              </>
-            )}
+            <ResponsiveVideo asset={VIDEO_ASSETS.facility} />
             <div className="absolute inset-0 hidden bg-gradient-to-t from-black/90 via-black/55 to-transparent md:block" />
             <div className="absolute inset-0 flex items-end p-6 max-md:hidden">
               <p className="max-w-2xl text-base font-semibold leading-7 text-white">
@@ -1845,7 +1871,7 @@ function Footer() {
       <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-[1.1fr_0.9fr_0.9fr]">
         <div>
           <img
-            src="/nufinish-logo.png"
+            src="/nufinish-logo-192.webp"
             alt="Nu Finish Collision Center badge"
             className="h-24 w-24 object-contain drop-shadow-[0_14px_34px_rgba(0,0,0,0.3)]"
           />
