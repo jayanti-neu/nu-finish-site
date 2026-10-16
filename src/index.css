@@ -1,5 +1,61 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Barlow";
+  src: url("/fonts/barlow-400-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Barlow";
+  src: url("/fonts/barlow-500-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Barlow";
+  src: url("/fonts/barlow-600-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Barlow";
+  src: url("/fonts/barlow-700-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Barlow";
+  src: url("/fonts/barlow-800-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Barlow";
+  src: url("/fonts/barlow-900-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Rajdhani";
+  src: url("/fonts/rajdhani-700-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
 /* Nu Finish Collision Center brand palette (from logo + race car) */
 @theme {
   --color-brand: #4fd13c; /* bright brand green — fills, buttons, active states */
@@ -10,6 +66,8 @@
 
 :root {
   --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --font-body: "Barlow", "Segoe UI", sans-serif;
+  --font-display: "Rajdhani", "Barlow", "Segoe UI", sans-serif;
   --site-bg:
     radial-gradient(circle at top, rgba(79, 209, 60, 0.08), transparent 28%),
     linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
@@ -18,11 +76,55 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 80px;
 }
 
 body {
   background: var(--site-bg);
+  font-family: var(--font-body);
+  letter-spacing: 0.01em;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
+
+:focus-visible {
+  outline: 3px solid #006db3;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 2px #fff;
+}
+
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  z-index: 100;
+  transform: translateY(-200%);
+  border-radius: 9999px;
+  background: #fff;
+  color: #0f172a;
+  padding: 0.75rem 1rem;
+  font-weight: 800;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+@media (min-width: 64rem) {
+  .hero-storefront {
+    object-position: center 58%;
+  }
+}
+
+h1,
+h2,
+h3,
+.nav-link,
+.text-shimmer {
+  font-family: var(--font-display);
+  letter-spacing: 0.015em;
+}
+
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -39,6 +141,7 @@ body {
 
   .theme-shell section.bg-white,
   .theme-shell #services,
+  .theme-shell #results,
   .theme-shell #gallery,
   .theme-shell #owner,
   .theme-shell #contact {
@@ -47,7 +150,8 @@ body {
 
   .theme-shell .bg-white,
   .theme-shell .bg-slate-50,
-  .theme-shell .bg-slate-100 {
+  .theme-shell .bg-slate-100,
+  .theme-shell .bg-slate-200 {
     background-color: rgba(15, 23, 42, 0.82) !important;
   }
 
@@ -60,10 +164,14 @@ body {
   }
 
   .theme-shell .border-black\/10,
-  .theme-shell .border-black\/8,
-  .theme-shell .border-black\/6,
+  .theme-shell .border-black\/\[8\%\],
+  .theme-shell .border-black\/\[6\%\],
   .theme-shell .border-slate-300 {
     border-color: rgba(148, 163, 184, 0.26) !important;
+  }
+
+  .theme-shell .auto-tech-badge {
+    background-image: none;
   }
 }
 
@@ -121,11 +229,11 @@ body {
 }
 
 .motion-float {
-  animation: drift 7s ease-in-out infinite;
+  animation: drift 7s ease-in-out 3;
 }
 
 .motion-glow {
-  animation: pulse-glow 4.2s ease-in-out infinite;
+  animation: pulse-glow 4.2s ease-in-out 3;
 }
 
 /* Scroll-triggered reveal — hidden until an IntersectionObserver toggles .in-view */
@@ -155,24 +263,6 @@ body {
   transform: none;
 }
 
-/* Slow parallax-style zoom on hero backgrounds */
-@keyframes ken-burns {
-  0% {
-    transform: scale(1.05) translate(0, 0);
-  }
-  50% {
-    transform: scale(1.14) translate(-1.5%, -1%);
-  }
-  100% {
-    transform: scale(1.05) translate(0, 0);
-  }
-}
-
-.ken-burns {
-  animation: ken-burns 26s ease-in-out infinite;
-  transform-origin: center;
-}
-
 /* Animated brand-gradient text sweep */
 @keyframes text-shimmer {
   0% {
@@ -185,18 +275,17 @@ body {
 
 .text-shimmer {
   background-image: linear-gradient(
-    90deg,
-    #4fd13c 0%,
-    #ffffff 30%,
-    #22a5db 55%,
-    #4fd13c 80%,
-    #ffffff 100%
+    125deg,
+    #f5fff2 0%,
+    #c9f3c1 26%,
+    #b4e5f7 52%,
+    #d8f8cf 76%,
+    #f5fff2 100%
   );
-  background-size: 200% 100%;
+  background-size: 100% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: text-shimmer 6s linear infinite;
 }
 
 /* Diagonal shine sweep on primary CTA hover */
@@ -315,9 +404,127 @@ body {
 /* Top-of-page scroll progress track */
 .scroll-progress {
   background: linear-gradient(90deg, #4fd13c 0%, #22a5db 50%, #4fd13c 100%);
-  background-size: 200% 100%;
-  animation: text-shimmer 4s linear infinite;
   transition: width 120ms linear;
+}
+
+.shop-floor-overlay {
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.07) 0,
+      rgba(255, 255, 255, 0.07) 2px,
+      transparent 2px,
+      transparent 16px
+    ),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.45));
+  mix-blend-mode: soft-light;
+}
+
+.automotive-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.automotive-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(79, 209, 60, 0.09), transparent 22%),
+    repeating-linear-gradient(
+      135deg,
+      rgba(15, 23, 42, 0.05) 0,
+      rgba(15, 23, 42, 0.05) 1px,
+      transparent 1px,
+      transparent 14px
+    );
+  opacity: 0.85;
+  z-index: 0;
+}
+
+.automotive-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.auto-tech-badge {
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.04);
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.92),
+    rgba(241, 245, 249, 0.92)
+  );
+}
+
+.process-lane-card {
+  position: relative;
+  overflow: hidden;
+  background-image: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.02) 45%,
+    rgba(0, 0, 0, 0.14) 100%
+  );
+}
+
+.process-lane-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #4fd13c 0%, #22a5db 100%);
+}
+
+.facility-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background-image: linear-gradient(
+    180deg,
+    rgba(24, 34, 49, 0.94) 0%,
+    rgba(11, 18, 34, 0.96) 100%
+  );
+}
+
+.facility-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    rgba(79, 209, 60, 0.55),
+    rgba(34, 165, 219, 0.4)
+  );
+  z-index: 0;
+}
+
+.facility-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.facility-icon-shell {
+  background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(148, 163, 184, 0.22),
+    0 8px 20px rgba(2, 6, 23, 0.32);
+}
+
+@media (max-width: 767px) {
+  .marquee-track {
+    gap: 0.75rem;
+  }
+
+  .marquee-track > div {
+    min-width: 240px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -329,7 +536,6 @@ body {
   .motion-card,
   .motion-float,
   .motion-glow,
-  .ken-burns,
   .text-shimmer,
   .marquee-track,
   .scroll-progress,

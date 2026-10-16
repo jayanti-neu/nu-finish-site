@@ -8,11 +8,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- Before & After section ("Results" in the nav) showing five customer repairs side by side, with a Before/After toggle on phones
+- Before & After viewer: select any repair photo to see before and after full screen, click or tap to zoom, and move between vehicles with the arrow keys
+- Phone hero: the full storefront photo now sits below the call and directions buttons, with the address and four quick facts. Tablet and desktop keep the storefront photo behind the headline, without the diagonal line texture
 - Automated video processing workflow for compressing and trimming source MOV files into web-ready desktop MP4 and mobile WebP assets
 - Embedded Google map in the contact section to show the shop location directly on the page
 - Dedicated owner spotlight section featuring John Groves and his involvement with local motorsports
 
 ### Changed
+
+- Photo gallery uses one photo shape so rows line up, leads with a wide shop-floor photo on large screens, and no longer repeats the storefront photo shown in the hero
 
 - Refined homepage content and hierarchy to better emphasize Nu Finish's collision repair mission and customer process
 - Reworked hero section with improved headline flow, clearer visual treatment, and a static building image background

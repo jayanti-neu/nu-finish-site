@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Award,
   Check,
@@ -8,15 +8,18 @@ import {
   Leaf,
   Lock,
   MapPin,
+  Pause,
   Phone,
+  Play,
   Ruler,
   ShieldCheck,
   Wrench,
   X,
+  ZoomIn,
 } from "lucide-react";
 
 const PHONE_DISPLAY = "(301) 334-4727";
-const PHONE_HREF = "tel:3013344727";
+const PHONE_HREF = "tel:+13013344727";
 const ADDRESS = "1470 Maryland Highway, Oakland, MD 21550";
 const MAP_HREF =
   "https://www.google.com/maps/search/?api=1&query=1470+Maryland+Highway+Oakland+MD+21550";
@@ -24,6 +27,7 @@ const MAP_HREF =
 const NAV = [
   ["services", "Services"],
   ["process", "Process"],
+  ["results", "Results"],
   ["about", "About"],
   ["gallery", "Gallery"],
   ["owner", "Owner"],
@@ -34,60 +38,69 @@ const SERVICES = [
   {
     Icon: Wrench,
     title: "Collision Repair",
-    desc: "Structural and cosmetic repairs completed with care, accuracy, and a clear communication process from intake through delivery.",
+    desc: "We repair collision damage and keep you updated from drop-off through pickup.",
   },
   {
     Icon: SprayGunIcon,
     title: "Paint & Refinishing",
-    desc: "Valspar and DeBeer certified refinishing with careful color match work and a 1-year paint warranty for added confidence after delivery.",
+    desc: "We prepare, color-match, paint, and clear-coat repaired areas using Valspar and DeBeer systems. Refinishing includes a 1-year paint warranty.",
   },
   {
     Icon: WindshieldIcon,
     title: "Glass Replacement",
-    desc: "Glass replacement is coordinated to keep repairs moving smoothly and to return vehicles safely and cleanly.",
+    desc: "When glass replacement is needed, we coordinate the work and include it in your repair schedule.",
   },
   {
     Icon: Ruler,
     title: "Frame & Unibody Repair",
-    desc: "Computerized measuring and straightening tools help restore alignment and structural integrity to manufacturer expectations.",
+    desc: "We repair frame and unibody damage as part of the collision repair process.",
   },
   {
     Icon: ShieldCheck,
     title: "Insurance Claim Coordination",
-    desc: "We work with customers and insurance carriers throughout the repair process to help keep paperwork, approvals, and scheduling moving smoothly.",
+    desc: "We help organize estimate paperwork and repair approvals with your insurance company.",
   },
   {
     Icon: PartnerServicesIcon,
     title: "Specialty Repair Coordination",
-    desc: "When outside specialty work is needed, we coordinate it clearly so you know what is being handled, when it is happening, and what to expect next.",
+    desc: "When outside specialty work is needed, we coordinate it with a repair partner and keep it on the same schedule.",
   },
 ];
+
+const SERVICE_TECH_TAGS = {
+  "Collision Repair": ["Damage Repair", "Structure"],
+  "Paint & Refinishing": ["Color Match", "Clear Coat"],
+  "Glass Replacement": ["Coordinated Service", "Scheduling"],
+  "Frame & Unibody Repair": ["Frame Repair", "Unibody Repair"],
+  "Insurance Claim Coordination": ["Paperwork", "Approvals"],
+  "Specialty Repair Coordination": ["Repair Partners", "Scheduling"],
+};
 
 const PROCESS = [
   {
     step: "01",
-    title: "Call or Stop In",
-    body: "Bring the vehicle to the shop or call first so the team can begin the intake conversation and explain the next step for your situation.",
+    title: "First Call & Damage Review",
+    body: "Call or stop in so we can review the visible damage and explain the estimate process.",
   },
   {
     step: "02",
-    title: "Inspection & Documentation",
-    body: "Damage is reviewed, documented, and organized into the estimate process through the proper insurance or customer-pay channel.",
+    title: "Inspection & Estimate",
+    body: "We document the damage, plan the repair, and prepare the estimate for approval.",
   },
   {
     step: "03",
     title: "Approval & Scheduling",
-    body: "Insurance jobs move forward once the carrier approves the repair plan. Customer-pay work follows the same path, with approval coming directly from the customer.",
+    body: "Your insurance company approves the estimate, or you do if you're paying yourself. Then we order parts and schedule the repair.",
   },
   {
     step: "04",
-    title: "Repair, Refinish & Coordination",
-    body: "Repairs, refinishing, and any needed specialty work are coordinated carefully so the customer knows what is happening and why.",
+    title: "Repair, Paint & Reassembly",
+    body: "We complete the body repair, prepare and paint the repaired areas, and put the vehicle back together.",
   },
   {
     step: "05",
-    title: "Final Review & Pickup",
-    body: "Each vehicle goes through final review before pickup, with completed refinishing work covered by a 1-year paint warranty.",
+    title: "Final Check & Pickup",
+    body: "We inspect the completed repair and clean the work area before pickup. Refinishing work includes a 1-year paint warranty.",
   },
 ];
 
@@ -102,7 +115,7 @@ const TIMELINE = [
   },
   {
     year: "2010s",
-    text: "The facility grew into one of the largest collision-repair operations in the county, with the space and equipment to handle more complex work.",
+    text: "The shop continued serving local drivers from its Maryland Highway location.",
   },
   {
     year: "Today",
@@ -113,46 +126,41 @@ const TIMELINE = [
 const FACILITY = [
   {
     Icon: GarageDoorIcon,
-    title: "22-Bay Facility",
-    desc: "A large shop footprint helps the team keep work moving while maintaining a cleaner intake-to-delivery workflow.",
+    title: "Repair Space",
+    desc: "The shop has dedicated areas for the different stages of a collision repair.",
   },
   {
     Icon: Ruler,
-    title: "Computerized Measuring",
-    desc: "Frame and structural repair work is supported by computerized measurement tools for accuracy and repeatability.",
+    title: "Repair Planning",
+    desc: "The team reviews damage and repair needs before work begins.",
   },
   {
     Icon: PaintBoothIcon,
     title: "Refinishing Environment",
-    desc: "Refinishing work is completed in a controlled environment designed to help deliver a cleaner, more consistent finish.",
+    desc: "Paint preparation and refinishing are completed in a dedicated work area.",
   },
   {
     Icon: Lock,
-    title: "Secure Vehicle Handling",
-    desc: "Vehicles remain in a managed repair environment while work is in progress and communication stays centralized.",
+    title: "Vehicle Care",
+    desc: "Vehicles stay at the shop while scheduled repair work is underway.",
   },
   {
     Icon: Award,
     title: "Valspar & DeBeer Certified",
-    desc: "Nu Finish is certified with Valspar and DeBeer systems, giving customers confidence in the refinishing products used on their vehicle.",
+    desc: "Nu Finish is certified with the Valspar and DeBeer refinishing systems used at the shop.",
   },
   {
     Icon: Leaf,
-    title: "EPA 6H Paint Team",
-    desc: "The refinishing operation highlights trained personnel and responsible paint-process handling across the repair workflow.",
+    title: "Paint Handling",
+    desc: "The team follows the shop's established preparation and paint-handling steps.",
   },
 ];
 
 const TESTIMONIALS = [
   {
     quote:
-      "Being in an accident is stressful, but they made the entire process so much easier. They kept me updated every step of the way, answered all of my questions, and truly made me feel like they cared.",
-    by: "Evelyn S. · Manassas, VA",
-  },
-  {
-    quote:
-      "When I picked up my vehicle, I was amazed. It looked absolutely perfect. The quality of the work is outstanding, and their attention to detail is matched by no other.",
-    by: "Satisfied customer",
+      "Being in an accident is stressful, but they made the entire process so much easier. They kept me updated every step of the way, answered all of my questions, and truly made me feel like they cared. When I picked up my vehicle, I was amazed. It looked absolutely perfect. The quality of the work is outstanding, and their attention to detail is matched by no other.",
+    by: "Evelyn S. · via Yelp",
   },
 ];
 
@@ -162,15 +170,67 @@ const CONTACT_POINTS = [
   { Icon: Clock, label: "Hours", value: "Mon-Fri 9:00 AM-5:00 PM" },
 ];
 
+// Customer repairs photographed by the shop. Each photo is a 4:3 WebP in two
+// widths (480 and 960) under public/gallery/before-after/<slug>-<stage>-<width>.webp.
+const BEFORE_AFTER = [
+  {
+    slug: "f250",
+    vehicle: "Ford F-250 Super Duty",
+    repair: "Front corner: bumper, fender, and headlight",
+    beforeAlt:
+      "Black Ford F-250 with its front bumper torn away and the front fender crushed around the wheel",
+    afterAlt:
+      "The same Ford F-250 after repair, with a straight bumper, new headlight, and smooth fender",
+  },
+  {
+    slug: "camaro",
+    vehicle: "Chevrolet Camaro",
+    repair: "Front fender and door edge",
+    beforeAlt:
+      "Gray Chevrolet Camaro with a deep crease in the front fender where it meets the door",
+    afterAlt:
+      "The same Camaro after repair, with smooth, matched paint across the fender and door",
+  },
+  {
+    slug: "silverado",
+    vehicle: "Chevrolet Silverado",
+    repair: "Front grille and bumper",
+    beforeAlt:
+      "Black Chevrolet Silverado with a crushed lower grille and bent front bumper",
+    afterAlt:
+      "The same Silverado in the shop after repair, with an aligned grille and straight bumper",
+  },
+  {
+    slug: "wrx",
+    vehicle: "Subaru WRX",
+    repair: "Front bumper and fender",
+    beforeAlt:
+      "Black Subaru WRX with scraped paint and a pushed-in bumper below the headlight",
+    afterAlt:
+      "The same Subaru WRX after repair, with clean bumper and fender lines",
+  },
+  {
+    slug: "murano",
+    vehicle: "Nissan Murano",
+    repair: "Front fender and bumper",
+    beforeAlt:
+      "White Nissan Murano with a dent in the front fender above the wheel",
+    afterAlt:
+      "The same Murano after repair, parked in front of the Nu Finish shop",
+  },
+];
+
+// One frame shape for every photo keeps rows even. The first photo spans the
+// full width on large screens; 1 wide + 9 photos fills 3 columns evenly, and
+// 10 photos fill 2 columns evenly.
 const GALLERY_IMAGES = [
   {
-    src: "/gallery/front-of-building.webp",
-    alt: "Front of the Nu Finish Collision Center building",
-    title: "Front Building",
+    src: "/gallery/body-side-of-shop.webp",
+    alt: "Body side work area of the Nu Finish shop",
+    title: "Body Repair Area",
     caption:
-      "The Maryland Highway location serves customers throughout Garrett County and beyond.",
-    layout: "sm:col-span-2 xl:col-span-3",
-    frame: "aspect-[21/9]",
+      "Body repair space is organized to keep each job moving through the right sequence.",
+    featured: true,
   },
   {
     src: "/gallery/grover-mixing-paint.webp",
@@ -178,7 +238,7 @@ const GALLERY_IMAGES = [
     title: "Color Mixing",
     caption:
       "Careful paint mixing helps every refinishing job start with accuracy.",
-    frame: "aspect-[4/5]",
+    focus: "50% 22%",
   },
   {
     src: "/gallery/grover-mixing-paint-2.webp",
@@ -186,7 +246,7 @@ const GALLERY_IMAGES = [
     title: "Paint Bench",
     caption:
       "Color match work is handled deliberately so panels blend cleanly and consistently.",
-    frame: "aspect-[4/5]",
+    focus: "50% 40%",
   },
   {
     src: "/gallery/hood-in-sealer-before-spraying-color.webp",
@@ -194,46 +254,7 @@ const GALLERY_IMAGES = [
     title: "Pre-Paint Prep",
     caption:
       "Preparation work sets the stage for a cleaner, more consistent finish.",
-    frame: "aspect-[4/3]",
-  },
-  {
-    src: "/gallery/fresh-clean-paint-booth.webp",
-    alt: "Clean paint booth prepared for refinishing work",
-    title: "Paint Booth",
-    caption:
-      "A controlled booth environment supports high-quality refinishing work.",
-    frame: "aspect-[4/3]",
-  },
-  {
-    src: "/gallery/curtain-paint-booth.webp",
-    alt: "Curtain paint booth area inside Nu Finish",
-    title: "Shop Workflow",
-    caption:
-      "Dedicated work zones help the team move vehicles through each repair stage efficiently.",
-    frame: "aspect-[4/3]",
-  },
-  {
-    src: "/gallery/side-down-draft-paint-booth.webp",
-    alt: "Side down draft paint booth at Nu Finish",
-    title: "Down Draft Booth",
-    caption:
-      "Ventilation and booth layout help maintain a cleaner refinishing environment.",
-    frame: "aspect-[4/3]",
-  },
-  {
-    src: "/gallery/parts-bay.webp",
-    alt: "Parts bay with organized parts and components for repairs",
-    title: "Parts & Coordination",
-    caption: "Organized parts handling helps keep repair schedules on track.",
-    frame: "aspect-[4/3]",
-  },
-  {
-    src: "/gallery/primer.webp",
-    alt: "Vehicle panel in primer during the refinishing process",
-    title: "Refinish Stages",
-    caption:
-      "Each stage of refinishing is handled with attention to detail from start to finish.",
-    frame: "aspect-[4/3]",
+    focus: "50% 60%",
   },
   {
     src: "/gallery/grover-beginning-to-clear-a-vehicle.webp",
@@ -241,15 +262,41 @@ const GALLERY_IMAGES = [
     title: "Final Coats",
     caption:
       "Final stages are completed with steady process control before delivery prep.",
-    frame: "aspect-[4/5]",
+    focus: "50% 62%",
   },
   {
-    src: "/gallery/body-side-of-shop.webp",
-    alt: "Body side work area of the Nu Finish shop",
-    title: "Body Repair Area",
+    src: "/gallery/primer.webp",
+    alt: "Vehicle panel in primer during the refinishing process",
+    title: "Refinish Stages",
     caption:
-      "Body repair space is organized to keep each job moving through the right sequence.",
-    frame: "aspect-[4/3]",
+      "Each stage of refinishing is handled with attention to detail from start to finish.",
+  },
+  {
+    src: "/gallery/fresh-clean-paint-booth.webp",
+    alt: "Clean paint booth prepared for refinishing work",
+    title: "Paint Booth",
+    caption:
+      "A dedicated paint booth is used during refinishing.",
+  },
+  {
+    src: "/gallery/curtain-paint-booth.webp",
+    alt: "Curtain paint booth area inside Nu Finish",
+    title: "Repair Steps",
+    caption:
+      "Dedicated work zones help the team move vehicles through each repair stage efficiently.",
+  },
+  {
+    src: "/gallery/side-down-draft-paint-booth.webp",
+    alt: "Side down draft paint booth at Nu Finish",
+    title: "Down Draft Booth",
+    caption:
+      "Ventilation and booth layout help maintain a cleaner refinishing environment.",
+  },
+  {
+    src: "/gallery/parts-bay.webp",
+    alt: "Parts bay with organized parts and components for repairs",
+    title: "Parts & Coordination",
+    caption: "Organized parts handling helps keep repair schedules on track.",
   },
 ];
 
@@ -265,7 +312,22 @@ const VIDEO_ASSETS = {
   motorsports: {
     desktop: "/gallery/videos/web/motorsports-legacy.mp4",
     mobileWebp: "/gallery/videos/mobile-webp/motorsports-legacy.webp",
-    still: "/gallery/front-of-building.webp",
+    still: "/gallery/videos/stills/motorsports-legacy.webp",
+  },
+  facility: {
+    desktop: "/gallery/videos/web/clear-coat-booth.mp4",
+    mobileWebp: "/gallery/videos/mobile-webp/clear-coat-booth.webp",
+    still: "/gallery/grover-beginning-to-clear-a-vehicle.webp",
+  },
+  ownerTrack: {
+    desktop: "/gallery/videos/web/track-action.mp4",
+    mobileWebp: "/gallery/videos/mobile-webp/track-action.webp",
+    still: "/gallery/videos/stills/track-action.webp",
+  },
+  ownerRace: {
+    desktop: "/gallery/videos/web/hero-race.mp4",
+    mobileWebp: "/gallery/videos/mobile-webp/hero-race.webp",
+    still: "/gallery/videos/stills/hero-race.webp",
   },
 };
 
@@ -313,6 +375,154 @@ function usePrefersReducedMotion() {
   return reduced;
 }
 
+function useMediaQuery(query) {
+  const [matches, setMatches] = useState(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mediaQuery = window.matchMedia(query);
+    const update = () => setMatches(mediaQuery.matches);
+    update();
+    mediaQuery.addEventListener("change", update);
+    return () => mediaQuery.removeEventListener("change", update);
+  }, [query]);
+
+  return matches;
+}
+
+function ResponsiveVideo({ asset, className = "h-full w-full object-cover" }) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const isMobile = useMediaQuery("(max-width: 767px)");
+  const [nearViewport, setNearViewport] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    if (isMobile !== false || prefersReducedMotion || !videoRef.current) return;
+    if (!("IntersectionObserver" in window)) {
+      const timer = window.setTimeout(() => setNearViewport(true), 0);
+      return () => window.clearTimeout(timer);
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setNearViewport(true);
+        observer.disconnect();
+      },
+      { rootMargin: "500px 0px", threshold: 0.01 },
+    );
+    observer.observe(videoRef.current);
+    return () => observer.disconnect();
+  }, [isMobile, prefersReducedMotion]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (isMobile !== false || !nearViewport || !video) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (paused) {
+          video.pause();
+        } else if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.05 },
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [isMobile, nearViewport, paused]);
+
+  const togglePlayback = () => {
+    if (isMobile) {
+      setPaused((value) => !value);
+      return;
+    }
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) {
+      video.play().catch(() => {});
+      setPaused(false);
+    } else {
+      video.pause();
+      setPaused(true);
+    }
+  };
+
+  if (prefersReducedMotion || isMobile === null) {
+    return (
+      <img
+        src={asset.still}
+        alt=""
+        aria-hidden="true"
+        className={className}
+        loading="lazy"
+        decoding="async"
+      />
+    );
+  }
+
+  if (isMobile) {
+    return (
+      <>
+        <img
+          src={paused ? asset.still : asset.mobileWebp}
+          alt=""
+          aria-hidden="true"
+          className={className}
+          loading="lazy"
+          decoding="async"
+        />
+        <button
+          type="button"
+          onClick={togglePlayback}
+          className="absolute right-3 top-3 z-20 inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/40 bg-black/75 text-white transition hover:bg-black"
+          aria-label={paused ? "Play motion" : "Pause motion"}
+        >
+          {paused ? (
+            <Play className="h-4 w-4" aria-hidden="true" />
+          ) : (
+            <Pause className="h-4 w-4" aria-hidden="true" />
+          )}
+        </button>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <video
+        ref={videoRef}
+        className={className}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload={nearViewport ? "metadata" : "none"}
+        poster={asset.still}
+        aria-hidden="true"
+      >
+        {nearViewport ? <source src={asset.desktop} type="video/mp4" /> : null}
+      </video>
+      <button
+        type="button"
+        onClick={togglePlayback}
+        className="absolute right-3 top-3 z-20 inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/40 bg-black/75 text-white transition hover:bg-black"
+        aria-label={paused ? "Play video" : "Pause video"}
+      >
+        {paused ? (
+          <Play className="h-4 w-4" aria-hidden="true" />
+        ) : (
+          <Pause className="h-4 w-4" aria-hidden="true" />
+        )}
+      </button>
+    </>
+  );
+}
+
 function ScrollProgress() {
   const [pct, setPct] = useState(0);
   useEffect(() => {
@@ -341,7 +551,7 @@ function ScrollProgress() {
 function SprayGunIcon({ className }) {
   return (
     <img
-      src="/spraygun.png"
+      src="/spraygun-96.webp"
       alt=""
       className={className}
       aria-hidden="true"
@@ -508,7 +718,9 @@ function SectionHeading({ kicker, title, body, align = "left", dark = true }) {
       className={`${center ? "mx-auto max-w-2xl text-center" : "max-w-2xl"} motion-enter`}
       style={motionDelay(80)}
     >
-      <p className="mb-3 text-[11px] font-black uppercase tracking-[0.28em] text-brand">
+      <p
+        className={`mb-3 text-[11px] font-black uppercase tracking-[0.28em] text-brand ${dark ? "" : "text-brand-ink"}`}
+      >
         {kicker}
       </p>
       <h2
@@ -538,7 +750,7 @@ function CTAGroup({ compact = false, dark = true }) {
       <a
         href={MAP_HREF}
         target="_blank"
-        rel="noreferrer"
+        rel="noopener noreferrer"
         className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition ${dark ? "border border-white/20 bg-white/5 text-white hover:bg-white/10" : "border border-slate-300 bg-white text-slate-900 hover:bg-slate-100"}`}
       >
         <MapPin className="h-4 w-4" />
@@ -550,53 +762,71 @@ function CTAGroup({ compact = false, dark = true }) {
 
 function Navbar() {
   const [open, setOpen] = useState(false);
+  const menuButtonRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const onKeyDown = (event) => {
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      menuButtonRef.current?.focus();
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open]);
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-black/85 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6">
         <a
           href="#top"
-          className="flex items-center gap-3"
+          className="flex shrink-0 items-center gap-3"
           aria-label="Nu Finish home"
         >
           <img
-            src="/nufinish-wordmark-transparent.png"
+            src="/nufinish-wordmark-360.webp"
             alt="Nu Finish Collision Center"
             className="h-10 w-auto drop-shadow-[0_10px_26px_rgba(0,0,0,0.35)]"
           />
         </a>
 
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav aria-label="Primary" className="hidden items-center gap-1 md:flex">
           {NAV.map(([id, label]) => (
             <a
               key={id}
               href={`#${id}`}
-              className="nav-link rounded-full px-4 py-2 text-sm font-semibold text-slate-200 transition hover:text-white"
+              className="nav-link whitespace-nowrap rounded-full px-2 py-2 text-sm font-semibold text-slate-200 transition hover:text-white lg:px-4"
             >
               {label}
             </a>
           ))}
           <a
             href={PHONE_HREF}
-            className="btn-shine ml-2 rounded-full bg-brand px-4 py-2 text-sm font-black text-black transition hover:bg-brand-hover"
+            className="btn-shine ml-2 whitespace-nowrap rounded-full bg-brand px-4 py-2 text-sm font-black text-black transition hover:bg-brand-hover"
           >
             Call Now
           </a>
         </nav>
 
         <button
+          ref={menuButtonRef}
           type="button"
           onClick={() => setOpen((value) => !value)}
-          className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-white md:hidden"
+          className="min-h-11 rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-white md:hidden"
           aria-expanded={open}
-          aria-label="Toggle navigation"
+          aria-controls="mobile-nav"
         >
-          Menu
+          {open ? "Close" : "Menu"}
         </button>
       </div>
 
       {open ? (
-        <div className="border-t border-white/10 px-4 pb-4 md:hidden">
+        <div
+          id="mobile-nav"
+          className="border-t border-white/10 px-4 pb-4 md:hidden"
+        >
           <div className="flex flex-col gap-2 pt-3">
             {NAV.map(([id, label]) => (
               <a
@@ -621,49 +851,108 @@ function Navbar() {
   );
 }
 
+const HERO_FACTS = [
+  ["Since 1986", "Serving Garrett County"],
+  ["Valspar & DeBeer", "Certified refinishing"],
+  ["1-year", "Paint warranty"],
+  ["9 AM–5 PM", "Open Mon–Fri"],
+];
+
+const HERO_HIGHLIGHTS = [
+  ["Damage Review", "Inspection and repair planning"],
+  ["Color Match", "Valspar & DeBeer certified refinishing"],
+  ["Before Pickup", "Final inspection with 1-year paint warranty"],
+];
+
+// 1×1 transparent GIF so a <picture> whose <source> doesn't match downloads nothing.
+const BLANK_IMG =
+  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+
 function Hero() {
+  // Phones (<768px): solid background with the full storefront photo below
+  // the buttons. Tablet and desktop (≥768px): storefront photo behind the text.
+  // Each layout's photo only downloads at its own screen size.
   return (
     <section
       id="top"
-      className="relative overflow-hidden border-b border-white/10 bg-black text-white"
+      className="relative overflow-hidden border-b border-white/10 bg-[#05070d] text-white md:bg-black"
     >
-      <div className="absolute inset-0">
-        <img
-          src={VIDEO_ASSETS.hero.still}
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover opacity-60"
-        />
+      <div className="absolute inset-0 md:hidden" aria-hidden="true">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,_rgba(79,209,60,0.20),_transparent_42%),radial-gradient(circle_at_100%_100%,_rgba(34,165,219,0.12),_transparent_40%)]" />
+        <div className="shop-floor-overlay absolute inset-0 opacity-40" />
+      </div>
+
+      <div className="absolute inset-0 hidden md:block" aria-hidden="true">
+        <picture>
+          <source media="(min-width: 768px)" srcSet={VIDEO_ASSETS.hero.still} />
+          <img
+            src={BLANK_IMG}
+            alt=""
+            fetchPriority="high"
+            className="hero-storefront absolute inset-0 h-full w-full object-cover opacity-60"
+          />
+        </picture>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(79,209,60,0.22),_transparent_36%),linear-gradient(135deg,_rgba(0,0,0,0.66),_rgba(0,0,0,0.44)_55%,_rgba(34,165,219,0.10))]" />
       </div>
 
-      <div className="relative mx-auto grid max-w-6xl gap-12 px-4 py-18 md:grid-cols-[1.15fr_0.85fr] md:px-6 md:py-24">
+      <div className="relative mx-auto grid max-w-6xl gap-12 px-4 pb-12 pt-10 md:grid-cols-[1.15fr_0.85fr] md:px-6 md:py-24 lg:grid-cols-[1.35fr_0.65fr]">
         <div className="motion-enter" style={motionDelay(0)}>
-          <div className="motion-glow mb-5 inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-brand">
-            Serving Garrett County since 1986
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-brand motion-glow">
+            Oakland, MD • Since 1986
           </div>
-          <h1 className="max-w-3xl text-4xl font-black leading-[1.02] text-white md:text-6xl">
-            Collision repair built on{" "}
-            <span className="text-shimmer">
-              clear process, precise work, and local trust.
-            </span>
+          <h1 className="text-shimmer max-w-3xl text-[2rem] font-black leading-[1.05] md:text-5xl md:leading-[1.02]">
+            Auto body collision and refinishing built on precise body fit,
+            controlled paint work, and hometown trust.
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
-            Nu Finish Collision Center has served Garrett County drivers since
-            1986 with collision repair, refinishing, and claim coordination
-            built around honest communication and quality workmanship.
+            Collision repair, painting, and help with your insurance claim. We
+            keep you updated from start to finish.
           </p>
 
-          <div className="motion-enter" style={motionDelay(180)}>
+          <div className="motion-enter" style={motionDelay(160)}>
             <CTAGroup />
           </div>
 
-          <div className="mt-10 grid gap-3 sm:grid-cols-3">
-            {[
-              ["Get Started", "Call or stop in to get started"],
-              ["Refinishing", "Valspar & DeBeer certified refinishing"],
-              ["Warranty", "1-year paint warranty"],
-            ].map(([label, item], index) => (
+          <figure className="mt-8 overflow-hidden rounded-[28px] border border-white/15 bg-slate-900 shadow-[0_30px_90px_rgba(0,0,0,0.45)] md:hidden">
+            <picture>
+              <source
+                media="(max-width: 767px)"
+                srcSet="/gallery/front-of-building-800.webp"
+              />
+              <img
+                src={BLANK_IMG}
+                width="800"
+                height="600"
+                alt="The Nu Finish Collision Center building on Maryland Highway, with the shop sign above the front door"
+                fetchPriority="high"
+                className="aspect-[4/3] h-auto w-full object-cover"
+              />
+            </picture>
+            <figcaption className="flex items-center gap-2 border-t border-white/10 px-5 py-3 text-sm text-slate-300">
+              <MapPin
+                className="h-4 w-4 shrink-0 text-brand"
+                aria-hidden="true"
+              />
+              {ADDRESS}
+            </figcaption>
+          </figure>
+
+          <dl className="mt-6 grid grid-cols-2 gap-3 md:hidden">
+            {HERO_FACTS.map(([value, label]) => (
+              <div
+                key={label}
+                className="rounded-2xl border border-white/10 bg-white/[4%] px-4 py-3"
+              >
+                <dt className="text-xs leading-5 text-slate-400">{label}</dt>
+                <dd className="mt-1 text-base font-black leading-6 text-white">
+                  {value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+
+          <div className="mt-10 hidden grid-cols-3 gap-3 md:grid">
+            {HERO_HIGHLIGHTS.map(([label, item], index) => (
               <div
                 key={item}
                 className="motion-card rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-slate-200"
@@ -682,31 +971,7 @@ function Hero() {
           </div>
         </div>
 
-        <div className="grid gap-4 self-end">
-          <div
-            className="motion-card motion-float rounded-[28px] border border-white/10 bg-white/[6%] p-6 shadow-[0_20px_80px_rgba(0,0,0,0.35)] backdrop-blur"
-            style={motionDelay(160)}
-          >
-            <p className="text-[11px] uppercase tracking-[0.28em] text-slate-400">
-              At a glance
-            </p>
-            <div className="mt-5 grid grid-cols-2 gap-4">
-              {[
-                ["22", "Bay facility"],
-                ["1997", "Current location since"],
-                ["1 Year", "Paint warranty"],
-                ["Mon-Fri", "9 AM-5 PM"],
-              ].map(([value, label]) => (
-                <div key={label} className="rounded-2xl bg-black/35 p-4">
-                  <p className="text-2xl font-black text-white">{value}</p>
-                  <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-400">
-                    {label}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-
+        <div className="hidden gap-4 self-end md:grid">
           <div
             className="motion-card rounded-[28px] border border-brand/25 bg-brand/10 p-6 text-sm leading-7 text-slate-100"
             style={motionDelay(280)}
@@ -728,12 +993,12 @@ function Hero() {
 
 function TrustBar() {
   const items = [
-    ["Certified", "Valspar & DeBeer refinishing"],
-    ["Coordinated", "Insurance and customer-pay workflows"],
+    ["Color Match", "Valspar & DeBeer paint systems"],
+    ["Collision Repair", "Frame and unibody repair"],
+    ["Paint & Refinish", "Preparation, color, and clear coat"],
     ["Protected", "1-year paint warranty"],
     ["Local", "Garrett County roots since 1986"],
-    ["Repaired", "Frame & unibody precision"],
-    ["Guided", "Phone-first intake process"],
+    ["Guided", "Insurance and customer-pay coordination"],
   ];
   return (
     <section
@@ -744,7 +1009,8 @@ function TrustBar() {
         {[...items, ...items].map(([title, detail], index) => (
           <div
             key={`${title}-${index}`}
-            className="flex min-w-[260px] items-center gap-3 rounded-2xl border border-black/[6%] bg-white px-5 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.04)]"
+            aria-hidden={index >= items.length ? "true" : undefined}
+            className="flex min-w-[280px] items-center gap-3 rounded-2xl border border-black/[6%] bg-white px-5 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.04)]"
           >
             <span className="inline-block h-2 w-2 rounded-full bg-brand" />
             <div>
@@ -761,37 +1027,60 @@ function TrustBar() {
 }
 
 function ServicesSection() {
+  const [showDetails, setShowDetails] = useState(false);
+
   return (
     <section
       id="services"
-      className="bg-[linear-gradient(180deg,#ffffff,#f5f7fa)] px-4 py-18 md:px-6"
+      className="bg-[linear-gradient(180deg,#ffffff,#f5f7fa)] px-4 py-12 md:px-6 md:py-18"
     >
       <div className="mx-auto max-w-6xl">
         <SectionHeading
-          kicker="What We Do"
-          title="Collision repair services built around quality work and clear communication."
-          body="From structural repair to refinishing and claim coordination, Nu Finish helps customers move through the repair process with confidence."
+          kicker="Auto Body & Paint Services"
+          title="Collision repair and painting, explained in plain language."
+          body="We repair collision damage, prepare and paint repaired areas, and help coordinate the estimate and approval process."
           dark={false}
         />
 
-        <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-2 md:gap-5 xl:grid-cols-3">
           {SERVICES.map(({ Icon, title, desc }, index) => (
             <article
               key={title}
               data-reveal
-              className="tilt-card group rounded-[28px] border border-black/[8%] bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)] hover:shadow-[0_22px_70px_rgba(15,23,42,0.1)]"
+              className="automotive-card tilt-card group rounded-[24px] border border-black/[8%] bg-white p-4 shadow-[0_18px_50px_rgba(15,23,42,0.06)] hover:shadow-[0_22px_70px_rgba(15,23,42,0.1)] md:rounded-[28px] md:p-6"
               style={motionDelay(index * 90)}
             >
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 text-brand">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-brand md:h-14 md:w-14">
                 <Icon className="h-8 w-8 md:h-[2.15rem] md:w-[2.15rem]" />
               </div>
-              <h3 className="mt-5 text-xl font-black text-slate-950">
+              <h3 className="mt-4 text-base font-black text-slate-950 md:mt-5 md:text-xl">
                 {title}
               </h3>
-              <p className="mt-3 text-sm leading-7 text-slate-600">{desc}</p>
+              <div className={`${showDetails ? "block" : "hidden"} md:block`}>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {SERVICE_TECH_TAGS[title]?.map((tag) => (
+                    <span
+                      key={tag}
+                      className="auto-tech-badge rounded-full border border-black/10 bg-slate-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-slate-700"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <p className="mt-3 text-sm leading-7 text-slate-600">{desc}</p>
+              </div>
             </article>
           ))}
         </div>
+
+        <button
+          type="button"
+          onClick={() => setShowDetails((value) => !value)}
+          className="mt-5 inline-flex min-h-11 items-center rounded-full border border-slate-300 bg-white px-5 text-sm font-bold text-slate-900 md:hidden"
+          aria-expanded={showDetails}
+        >
+          {showDetails ? "Hide service details" : "Show service details"}
+        </button>
 
         <div className="mt-10 rounded-[28px] border border-brand/25 bg-slate-950 p-8 text-white md:flex md:items-center md:justify-between md:gap-8">
           <div>
@@ -799,13 +1088,11 @@ function ServicesSection() {
               Insurance & customer-pay repairs
             </p>
             <h3 className="mt-3 text-2xl font-black">
-              We guide both insurance and customer-pay repairs from intake to
-              pickup.
+              The same repair steps, with the right person approving the estimate.
             </h3>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
-              Insurance work and customer-pay work move through the same repair
-              process. The difference is simply who approves the estimate before
-              repairs begin.
+              Your insurance company approves an insurance estimate. If you are
+              paying yourself, you approve it directly.
             </p>
           </div>
           <CTAGroup compact />
@@ -816,15 +1103,18 @@ function ServicesSection() {
 }
 
 function ProcessSection() {
-  const prefersReducedMotion = usePrefersReducedMotion();
+  const [showProcessDetails, setShowProcessDetails] = useState(false);
 
   return (
-    <section id="process" className="bg-black px-4 py-18 text-white md:px-6">
+    <section
+      id="process"
+      className="bg-black px-4 py-12 text-white md:px-6 md:py-18"
+    >
       <div className="mx-auto max-w-6xl">
         <SectionHeading
-          kicker="Intake & Repair Flow"
-          title="A straightforward repair process from first call to final pickup."
-          body="We believe customers should understand what happens next, who is responsible for approvals, and how the repair moves forward at each stage."
+          kicker="Repair Process"
+          title="A clear repair process from first call to pickup."
+          body="We review the damage, prepare an estimate, get approval, complete the repair, and check the vehicle before pickup."
         />
 
         <div
@@ -833,59 +1123,49 @@ function ProcessSection() {
           style={motionDelay(60)}
         >
           <div className="relative aspect-[16/8] w-full">
-            {prefersReducedMotion ? (
-              <img
-                src={VIDEO_ASSETS.process.still}
-                alt=""
-                aria-hidden="true"
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <>
-                <img
-                  src={VIDEO_ASSETS.process.mobileWebp}
-                  alt=""
-                  aria-hidden="true"
-                  className="h-full w-full object-cover md:hidden"
-                />
-                <video
-                  className="hidden h-full w-full object-cover md:block"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  preload="metadata"
-                  poster={VIDEO_ASSETS.process.still}
-                  aria-hidden="true"
-                >
-                  <source src={VIDEO_ASSETS.process.desktop} type="video/mp4" />
-                </video>
-              </>
-            )}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/40 to-transparent" />
-            <div className="absolute inset-0 flex items-end p-5 md:p-7">
-              <p className="max-w-2xl text-sm font-semibold leading-7 text-slate-100 md:text-base">
-                Real work in motion: every repair moves through a documented,
-                controlled process before final review and delivery.
+            <ResponsiveVideo asset={VIDEO_ASSETS.process} />
+            <div className="absolute inset-0 hidden bg-gradient-to-t from-black/90 via-black/55 to-transparent md:block" />
+            <div className="absolute inset-0 flex items-end p-7 max-md:hidden">
+              <p className="max-w-2xl text-base font-semibold leading-7 text-white">
+                Color matching and blending before the final clear coat.
               </p>
             </div>
           </div>
+          <p className="bg-slate-950 px-5 py-4 text-sm font-semibold leading-7 text-white md:hidden">
+            Color matching and blending before the final clear coat.
+          </p>
         </div>
 
-        <div className="mt-10 grid gap-4 lg:grid-cols-5">
+        <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
           {PROCESS.map(({ step, title, body }, index) => (
             <article
               key={step}
               data-reveal
-              className="rounded-[28px] border border-white/10 bg-white/5 p-5 transition hover:border-brand/40 hover:bg-white/10"
+              className="process-lane-card rounded-[22px] border border-white/10 bg-white/5 p-4 transition hover:border-brand/40 hover:bg-white/10 sm:rounded-[28px] sm:p-5"
               style={motionDelay(index * 100)}
             >
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
+                Stage
+              </p>
               <p className="text-3xl font-black text-brand">{step}</p>
               <h3 className="mt-4 text-lg font-black text-white">{title}</h3>
-              <p className="mt-3 text-sm leading-7 text-slate-300">{body}</p>
+              <p
+                className={`${showProcessDetails ? "block" : "hidden"} mt-3 text-sm leading-7 text-slate-300 sm:block`}
+              >
+                {body}
+              </p>
             </article>
           ))}
         </div>
+
+        <button
+          type="button"
+          onClick={() => setShowProcessDetails((value) => !value)}
+          className="mt-5 inline-flex min-h-11 items-center rounded-full border border-white/30 bg-white/5 px-5 text-sm font-bold text-white sm:hidden"
+          aria-expanded={showProcessDetails}
+        >
+          {showProcessDetails ? "Hide process details" : "Show process details"}
+        </button>
 
         <div className="mt-8 rounded-[28px] border border-white/10 bg-white/5 p-6 text-sm leading-7 text-slate-300">
           <p className="font-black uppercase tracking-[0.18em] text-brand">
@@ -901,20 +1181,401 @@ function ProcessSection() {
   );
 }
 
+const BEFORE_AFTER_STAGES = [
+  ["before", "Before"],
+  ["after", "After"],
+];
+
+const beforeAfterSrc = (slug, stage, width) =>
+  `/gallery/before-after/${slug}-${stage}-${width}.webp`;
+
+function StageBadge({ stage, label }) {
+  return (
+    <span
+      className={`pointer-events-none absolute left-3 top-3 z-10 rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] ${stage === "after" ? "bg-brand text-black" : "bg-black/75 text-white"}`}
+    >
+      {label}
+    </span>
+  );
+}
+
+function ZoomablePhoto({ src, alt, stage, label }) {
+  // Click or tap to zoom to 2.5x around that point; moving the mouse pans.
+  // Pinch-zoom on phones still works on top of this.
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const [zoomed, setZoomed] = useState(false);
+  const [origin, setOrigin] = useState("50% 50%");
+
+  const originFromEvent = (event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    if (!rect.width || !rect.height || event.clientX === 0) return "50% 50%";
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+    return `${Math.min(100, Math.max(0, x))}% ${Math.min(100, Math.max(0, y))}%`;
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={(event) => {
+        if (!zoomed) setOrigin(originFromEvent(event));
+        setZoomed((value) => !value);
+      }}
+      onPointerMove={(event) => {
+        if (zoomed && event.pointerType === "mouse") {
+          setOrigin(originFromEvent(event));
+        }
+      }}
+      aria-label={`${zoomed ? "Zoom out of" : "Zoom in on"} the ${label.toLowerCase()} photo`}
+      className={`relative block h-full w-full overflow-hidden bg-black focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-brand ${zoomed ? "cursor-zoom-out" : "cursor-zoom-in"}`}
+    >
+      <img
+        src={src}
+        alt={alt}
+        decoding="async"
+        draggable="false"
+        className={`h-full w-full select-none object-contain ${prefersReducedMotion ? "" : "transition-transform duration-200 ease-out"}`}
+        style={{
+          transform: zoomed ? "scale(2.5)" : "scale(1)",
+          transformOrigin: origin,
+        }}
+      />
+      <StageBadge stage={stage} label={label} />
+    </button>
+  );
+}
+
+function BeforeAfterViewer({ index, stage, onStage, onNavigate, onClose }) {
+  const item = BEFORE_AFTER[index];
+  const dialogRef = useRef(null);
+  const closeButtonRef = useRef(null);
+  const titleId = "before-after-viewer-title";
+
+  useEffect(() => {
+    closeButtonRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") {
+        onClose();
+      } else if (event.key === "ArrowRight") {
+        onNavigate(1);
+      } else if (event.key === "ArrowLeft") {
+        onNavigate(-1);
+      } else if (event.key === "Tab") {
+        const focusable = [
+          ...(dialogRef.current?.querySelectorAll(
+            'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+          ) ?? []),
+        ].filter((element) => element.offsetParent !== null);
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    const { body } = document;
+    const previousOverflow = body.style.overflow;
+    body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [onClose, onNavigate]);
+
+  const navButton =
+    "inline-flex min-h-11 items-center gap-2 rounded-full border border-white/25 bg-white/5 px-4 text-sm font-semibold text-white transition hover:bg-white/15 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/60";
+
+  return (
+    <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+      className="fixed inset-0 z-[95] flex flex-col bg-slate-950 text-white"
+      onClick={onClose}
+    >
+      <div
+        className="mx-auto flex h-full w-full max-w-7xl flex-col gap-3 p-3 md:gap-4 md:p-6"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-[0.24em] text-brand">
+              Before & After · {index + 1} of {BEFORE_AFTER.length}
+            </p>
+            <h3 id={titleId} className="mt-1 text-xl font-black md:text-2xl">
+              {item.vehicle}
+            </h3>
+            <p className="text-sm text-slate-300">{item.repair}</p>
+          </div>
+          <button
+            ref={closeButtonRef}
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/30 bg-black/40 text-white transition hover:bg-black/70 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/60"
+            aria-label="Close before and after viewer"
+          >
+            <X className="h-5 w-5" aria-hidden="true" />
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between gap-3 md:hidden">
+        <div
+          role="group"
+          aria-label="Show before or after repair"
+          className="inline-flex rounded-full border border-white/15 bg-white/5 p-1"
+        >
+          {BEFORE_AFTER_STAGES.map(([key, label]) => (
+            <button
+              key={key}
+              type="button"
+              aria-pressed={stage === key}
+              onClick={() => onStage(key)}
+              className={`min-h-11 rounded-full px-5 text-sm font-bold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/60 ${stage === key ? "bg-brand text-black" : "text-slate-200"}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+          <p className="text-xs text-slate-400">Tap a photo to zoom</p>
+        </div>
+
+        <div className="grid min-h-0 flex-1 content-center gap-2 md:grid-cols-2 md:gap-3">
+          {BEFORE_AFTER_STAGES.map(([key, label]) => (
+            <div
+              key={`${item.slug}-${key}`}
+              className={`mx-auto aspect-[4/3] max-h-full w-full max-w-[calc((100dvh-15rem)*4/3)] overflow-hidden rounded-2xl border border-white/10 ${stage === key ? "block" : "hidden"} md:block`}
+            >
+              <ZoomablePhoto
+                src={beforeAfterSrc(item.slug, key, 1600)}
+                alt={key === "before" ? item.beforeAlt : item.afterAlt}
+                stage={key}
+                label={label}
+              />
+            </div>
+          ))}
+        </div>
+
+        <div className="flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => onNavigate(-1)}
+            className={navButton}
+            aria-label="Previous vehicle"
+          >
+            <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+            <span>
+              Previous<span className="hidden md:inline"> vehicle</span>
+            </span>
+          </button>
+          <p className="hidden text-sm text-slate-400 md:block">
+            Click a photo to zoom in. Use ← → to switch vehicles.
+          </p>
+          <button
+            type="button"
+            onClick={() => onNavigate(1)}
+            className={navButton}
+            aria-label="Next vehicle"
+          >
+            <span>
+              Next<span className="hidden md:inline"> vehicle</span>
+            </span>
+            <ChevronRight className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BeforeAfterCard({ item, featured, index, hiddenOnMobile = false, onOpen }) {
+  // Phones show one photo at a time with a toggle; wider screens show both.
+  const [stage, setStage] = useState("before");
+  const sizes = featured
+    ? "(min-width: 1152px) 560px, (min-width: 1024px) 50vw, (min-width: 640px) 50vw, 100vw"
+    : "(min-width: 1152px) 280px, (min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw";
+
+  return (
+    <article
+      data-reveal
+      className={`overflow-hidden rounded-[28px] border border-black/[8%] bg-white shadow-[0_18px_55px_rgba(15,23,42,0.08)] ${featured ? "lg:col-span-2" : ""} ${hiddenOnMobile ? "max-sm:hidden" : ""}`}
+      style={motionDelay(index * 80)}
+    >
+      <div className="grid gap-px bg-slate-200 sm:grid-cols-2">
+        {BEFORE_AFTER_STAGES.map(([key, label]) => (
+          <figure
+            key={key}
+            className={`group relative aspect-[4/3] bg-slate-100 ${stage === key ? "block" : "hidden"} sm:block`}
+          >
+            <button
+              type="button"
+              onClick={(event) => onOpen(index, key, event.currentTarget)}
+              className="block h-full w-full cursor-zoom-in overflow-hidden focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-brand"
+              aria-label={`Enlarge the ${label.toLowerCase()} photo of the ${item.vehicle}`}
+            >
+              <img
+                src={beforeAfterSrc(item.slug, key, 960)}
+                srcSet={`${beforeAfterSrc(item.slug, key, 480)} 480w, ${beforeAfterSrc(item.slug, key, 960)} 960w`}
+                sizes={sizes}
+                width="960"
+                height="720"
+                alt={key === "before" ? item.beforeAlt : item.afterAlt}
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover transition duration-500 ease-out group-hover:scale-[1.03]"
+              />
+              <span className="pointer-events-none absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-black/70 px-3 py-1.5 text-xs font-bold text-white">
+                <ZoomIn className="h-3.5 w-3.5" aria-hidden="true" />
+                Zoom
+              </span>
+            </button>
+            <StageBadge stage={key} label={label} />
+          </figure>
+        ))}
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-black/[6%] px-5 py-4">
+        <div>
+          <h3 className="text-lg font-black text-slate-950">{item.vehicle}</h3>
+          <p className="mt-1 text-sm leading-6 text-slate-600">
+            {item.repair}
+          </p>
+        </div>
+        <div
+          role="group"
+          aria-label={`Show ${item.vehicle} before or after repair`}
+          className="inline-flex rounded-full border border-black/10 bg-slate-100 p-1 sm:hidden"
+        >
+          {BEFORE_AFTER_STAGES.map(([key, label]) => (
+            <button
+              key={key}
+              type="button"
+              aria-pressed={stage === key}
+              onClick={() => setStage(key)}
+              className={`min-h-11 rounded-full px-4 text-sm font-bold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/45 ${stage === key ? "bg-brand text-black" : "text-slate-600"}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function BeforeAfterSection() {
+  const [showAllResults, setShowAllResults] = useState(false);
+  const [viewer, setViewer] = useState(null);
+  const openerRef = useRef(null);
+
+  const openViewer = useCallback((index, stage, opener) => {
+    openerRef.current = opener;
+    setViewer({ index, stage });
+  }, []);
+  const closeViewer = useCallback(() => {
+    setViewer(null);
+    window.requestAnimationFrame(() => openerRef.current?.focus());
+  }, []);
+  const navigateViewer = useCallback((step) => {
+    setViewer((current) =>
+      current
+        ? {
+            ...current,
+            index:
+              (current.index + step + BEFORE_AFTER.length) %
+              BEFORE_AFTER.length,
+          }
+        : current,
+    );
+  }, []);
+  const setViewerStage = useCallback((stage) => {
+    setViewer((current) => (current ? { ...current, stage } : current));
+  }, []);
+
+  return (
+    <section
+      id="results"
+      className="bg-[linear-gradient(180deg,#ffffff,#eef2f6)] px-4 py-12 md:px-6 md:py-18"
+    >
+      <div className="mx-auto max-w-6xl">
+        <SectionHeading
+          kicker="Before & After"
+          title="Real repairs from our shop floor."
+          body="Every vehicle below came through Nu Finish. The shop team photographed each one when it arrived and again when the repair was finished. Select any photo to see it larger."
+          dark={false}
+        />
+        <div className="mt-10 grid gap-6 lg:grid-cols-2">
+          {BEFORE_AFTER.map((item, index) => (
+            <BeforeAfterCard
+              key={item.slug}
+              item={item}
+              featured={index === 0}
+              index={index}
+              hiddenOnMobile={index >= 3 && !showAllResults}
+              onOpen={openViewer}
+            />
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShowAllResults((value) => !value)}
+          className="mt-5 inline-flex min-h-11 items-center rounded-full border border-slate-300 bg-white px-5 text-sm font-bold text-slate-900 sm:hidden"
+          aria-expanded={showAllResults}
+        >
+          {showAllResults ? "Show fewer results" : "Show all results"}
+        </button>
+        <p className="mt-8 text-sm leading-7 text-slate-600">
+          Have damage like this?{" "}
+          <a
+            href={PHONE_HREF}
+            className="font-bold text-slate-950 underline decoration-brand decoration-2 underline-offset-4 hover:text-brand-ink"
+          >
+            Call {PHONE_DISPLAY}
+          </a>{" "}
+          to talk through your repair.
+        </p>
+      </div>
+
+      {viewer ? (
+        <BeforeAfterViewer
+          index={viewer.index}
+          stage={viewer.stage}
+          onStage={setViewerStage}
+          onNavigate={navigateViewer}
+          onClose={closeViewer}
+        />
+      ) : null}
+    </section>
+  );
+}
+
 function AboutSection() {
   return (
-    <section id="about" className="bg-slate-950 px-4 py-18 text-white md:px-6">
+    <section
+      id="about"
+      className="bg-slate-950 px-4 py-12 text-white md:px-6 md:py-18"
+    >
       <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.95fr_1.05fr]">
         <div>
           <SectionHeading
             kicker="Our Story"
             title="Serving Garrett County drivers with pride, experience, and personal care."
-            body="For decades, Nu Finish has built its reputation on dependable repair work, straight answers, and a commitment to treating every customer with respect."
+            body="For decades, Nu Finish has built its reputation on dependable collision work, straight answers, and treating every customer with respect."
           />
 
           <div className="mt-8 rounded-[28px] border border-white/10 bg-white/5 p-6">
             <img
-              src="/nufinish-logo.png"
+              src="/nufinish-logo-224.webp"
               alt="Nu Finish Collision Center logo"
               className="h-28 w-auto drop-shadow-[0_14px_30px_rgba(0,0,0,0.28)]"
             />
@@ -925,10 +1586,9 @@ function AboutSection() {
               and work that supports both insurance and customer-pay clients.
             </p>
             <p className="mt-4 text-sm leading-7 text-slate-300">
-              John "Grover" Groves is the owner presented on the public site,
-              and the messaging now avoids outdated ownership, certification,
-              and warranty language so customers receive the right information
-              the first time.
+              John "Grover" Groves owns and runs Nu Finish today. The team keeps
+              estimate, certification, and warranty information clear from the
+              first conversation.
             </p>
           </div>
         </div>
@@ -958,14 +1618,13 @@ function AboutSection() {
               Commitment
             </p>
             <p className="mt-4 text-base font-semibold leading-8 text-white">
-              Every vehicle deserves honest communication, careful repair
-              planning, and a finish the customer can drive away feeling
-              confident in.
+              Every vehicle deserves clear communication, disciplined repair
+              planning, and a finish customers can leave with confidence.
             </p>
             <p className="mt-3 text-sm leading-7 text-slate-300">
               From the first conversation to final pickup, the goal is simple:
-              quality repairs, clear expectations, and service customers can
-              trust.
+              quality repairs, accurate expectations, and service customers can
+              trust at every stage.
             </p>
           </div>
         </div>
@@ -975,71 +1634,44 @@ function AboutSection() {
 }
 
 function OwnerSpotlightSection() {
-  const prefersReducedMotion = usePrefersReducedMotion();
-
   return (
     <section
       id="owner"
-      className="bg-[linear-gradient(180deg,#f8fafc,#eef3f8)] px-4 py-18 md:px-6"
+      className="bg-[linear-gradient(180deg,#f8fafc,#eef3f8)] px-4 py-12 md:px-6 md:py-18"
     >
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           kicker="Beyond The Shop"
           title="A closer look at owner John Groves and his connection to local motorsports."
-          body="Outside Nu Finish, John competes with WG Motorsports on regional dirt tracks. It is a personal pursuit that reflects discipline and attention to detail, while the shop remains fully focused on collision repair and refinishing."
+          body="Outside Nu Finish, John races on local dirt tracks. The shop remains focused on collision repair and painting."
           dark={false}
         />
 
         <div className="mt-10 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
           <div
             data-reveal="left"
-            className="overflow-hidden rounded-[30px] border border-black/10 bg-black shadow-[0_22px_60px_rgba(15,23,42,0.14)]"
+            className="self-start overflow-hidden rounded-[30px] border border-black/10 bg-black shadow-[0_22px_60px_rgba(15,23,42,0.14)]"
             style={motionDelay(40)}
           >
             <div className="relative aspect-[16/9] w-full">
-              {prefersReducedMotion ? (
-                <img
-                  src={VIDEO_ASSETS.motorsports.still}
-                  alt=""
-                  aria-hidden="true"
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <>
-                  <img
-                    src={VIDEO_ASSETS.motorsports.mobileWebp}
-                    alt=""
-                    aria-hidden="true"
-                    className="h-full w-full object-cover md:hidden"
-                  />
-                  <video
-                    className="hidden h-full w-full object-cover md:block"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    preload="metadata"
-                    poster={VIDEO_ASSETS.motorsports.still}
-                    aria-hidden="true"
-                  >
-                    <source
-                      src={VIDEO_ASSETS.motorsports.desktop}
-                      type="video/mp4"
-                    />
-                  </video>
-                </>
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-5 md:p-6">
-                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-brand">
+              <ResponsiveVideo asset={VIDEO_ASSETS.motorsports} />
+              <div className="absolute inset-0 hidden bg-gradient-to-t from-black/90 via-black/55 to-transparent md:block" />
+              <div className="absolute inset-x-0 bottom-0 hidden p-6 md:block">
+                <p className="inline-flex rounded-full bg-black/80 px-3 py-1 text-[11px] font-black uppercase tracking-[0.24em] text-brand">
                   John Groves · Owner Spotlight
                 </p>
                 <p className="mt-2 max-w-2xl text-sm leading-7 text-white/90">
-                  Motorsport is a personal chapter of John's story and a
-                  reflection of his roots in the local community. It remains
-                  separate from Nu Finish services and day-to-day shop work.
+                  John on track with his race car.
                 </p>
               </div>
+            </div>
+            <div className="border-t border-white/10 bg-black px-5 py-4 md:hidden">
+              <p className="inline-flex rounded-full bg-slate-900 px-3 py-1 text-[11px] font-black uppercase tracking-[0.24em] text-brand">
+                John Groves · Owner Spotlight
+              </p>
+              <p className="mt-2 text-sm leading-7 text-white">
+                John on track with his race car.
+              </p>
             </div>
           </div>
 
@@ -1052,25 +1684,49 @@ function OwnerSpotlightSection() {
               What It Means For Customers
             </p>
             <h3 className="mt-3 text-2xl font-black leading-tight text-slate-950">
-              The same standards customers value at Nu Finish remain the top
-              priority.
+              The shop's repair work remains the priority.
             </h3>
             <div className="mt-5 space-y-4 text-sm leading-7 text-slate-600">
               <p>
-                Customers rely on Nu Finish for precise collision repairs,
-                professional refinishing, and clear communication from intake
-                through delivery.
+                Customers rely on Nu Finish for collision repair, painting, and
+                clear updates from the first call through pickup.
               </p>
               <p>
-                Featuring this part of John's life provides context about the
-                owner behind the business and his long-standing presence in
-                Garrett County.
+                The focus stays on careful repairs, clear expectations, and a
+                completed vehicle ready for pickup.
               </p>
-              <p>
-                The mission does not change: quality workmanship, dependable
-                timelines, and a finished vehicle customers can leave with
-                confidence.
-              </p>
+            </div>
+
+            <div className="mt-7 grid gap-4 sm:grid-cols-2">
+              {[
+                [
+                  "Regional Dirt Track Nights",
+                  "John racing at a local dirt track.",
+                  VIDEO_ASSETS.ownerTrack,
+                ],
+                [
+                  "Race Day Background",
+                  "Race day.",
+                  VIDEO_ASSETS.ownerRace,
+                ],
+              ].map(([title, caption, asset]) => (
+                <div
+                  key={title}
+                  className="overflow-hidden rounded-2xl border border-black/12 bg-slate-950"
+                >
+                  <div className="relative aspect-[4/3] w-full">
+                    <ResponsiveVideo asset={asset} />
+                  </div>
+                  <div className="border-t border-white/10 px-3 py-2 text-white">
+                    <p className="text-[10px] font-black uppercase tracking-[0.16em] text-brand">
+                      {title}
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-slate-300">
+                      {caption}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -1080,33 +1736,69 @@ function OwnerSpotlightSection() {
 }
 
 function FacilitySection() {
+  const [showFacilityDetails, setShowFacilityDetails] = useState(false);
+
   return (
-    <section className="bg-white px-4 py-18 md:px-6">
+    <section
+      id="facility"
+      className="border-t border-white/10 bg-[#0b1220] px-4 py-12 text-white md:px-6 md:py-18"
+    >
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           kicker="Facility & Certifications"
-          title="The tools, space, and training to handle repairs with confidence."
-          body="Nu Finish combines facility capacity, refinishing certifications, and experienced repair personnel to help customers feel confident in the work being done."
-          dark={false}
+          title="A shop set up for each stage of collision repair."
+          body="The team uses dedicated repair and paint areas and works with Valspar and DeBeer refinishing systems."
         />
-        <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+
+        <div
+          data-reveal="zoom"
+          className="mt-10 overflow-hidden rounded-[30px] border border-white/12 bg-white/5"
+          style={motionDelay(30)}
+        >
+          <div className="relative aspect-[16/7] w-full">
+            <ResponsiveVideo asset={VIDEO_ASSETS.facility} />
+            <div className="absolute inset-0 hidden bg-gradient-to-t from-black/90 via-black/55 to-transparent md:block" />
+            <div className="absolute inset-0 flex items-end p-6 max-md:hidden">
+              <p className="max-w-2xl text-base font-semibold leading-7 text-white">
+                Final coats are applied in an enclosed paint booth.
+              </p>
+            </div>
+          </div>
+          <p className="bg-slate-950 px-5 py-4 text-sm font-semibold leading-7 text-white md:hidden">
+            Final coats are applied in an enclosed paint booth.
+          </p>
+        </div>
+
+        <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-2 md:gap-5 xl:grid-cols-3">
           {FACILITY.map(({ Icon, title, desc }, index) => (
             <article
               key={title}
               data-reveal={index % 2 === 0 ? "left" : "right"}
-              className="tilt-card rounded-[28px] border border-black/[8%] bg-slate-50 p-6"
+              className="facility-card tilt-card rounded-[22px] border border-white/12 p-4 shadow-[0_14px_34px_rgba(0,0,0,0.34)] transition hover:border-white/20 hover:shadow-[0_20px_48px_rgba(0,0,0,0.42)] md:rounded-[28px] md:p-6"
               style={motionDelay(index * 85)}
             >
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 text-brand">
+              <div className="facility-icon-shell flex h-14 w-14 items-center justify-center rounded-2xl text-brand">
                 <Icon className="h-8 w-8 md:h-[2.15rem] md:w-[2.15rem]" />
               </div>
-              <h3 className="mt-5 text-xl font-black text-slate-950">
+              <h3 className="mt-4 text-base font-black text-white md:mt-5 md:text-xl">
                 {title}
               </h3>
-              <p className="mt-3 text-sm leading-7 text-slate-600">{desc}</p>
+              <p
+                className={`${showFacilityDetails ? "block" : "hidden"} mt-3 text-sm leading-7 text-slate-300 md:block`}
+              >
+                {desc}
+              </p>
             </article>
           ))}
         </div>
+        <button
+          type="button"
+          onClick={() => setShowFacilityDetails((value) => !value)}
+          className="mt-5 inline-flex min-h-11 items-center rounded-full border border-white/30 bg-white/5 px-5 text-sm font-bold text-white md:hidden"
+          aria-expanded={showFacilityDetails}
+        >
+          {showFacilityDetails ? "Hide facility details" : "Show facility details"}
+        </button>
       </div>
     </section>
   );
@@ -1116,15 +1808,22 @@ function GallerySection() {
   const prefersReducedMotion = usePrefersReducedMotion();
   const [selectedImage, setSelectedImage] = useState(null);
   const [lightboxPhase, setLightboxPhase] = useState("closed");
+  const [showAllPhotos, setShowAllPhotos] = useState(false);
   const touchStartX = useRef(null);
   const touchStartY = useRef(null);
+  const dialogRef = useRef(null);
+  const closeButtonRef = useRef(null);
+  const openerRef = useRef(null);
+  const restoreFocusRef = useRef(false);
 
-  const openImage = (index) => {
+  const openImage = (index, event) => {
+    openerRef.current = event.currentTarget;
     setLightboxPhase(prefersReducedMotion ? "open" : "enter");
     setSelectedImage(index);
   };
   const closeLightbox = () => {
     if (selectedImage === null || lightboxPhase === "closing") return;
+    restoreFocusRef.current = true;
     if (prefersReducedMotion) {
       setSelectedImage(null);
       setLightboxPhase("closed");
@@ -1145,17 +1844,30 @@ function GallerySection() {
     const onKeyDown = (event) => {
       if (event.key === "Escape") {
         if (lightboxPhase === "closing") return;
+        restoreFocusRef.current = true;
         if (prefersReducedMotion) {
           setSelectedImage(null);
           setLightboxPhase("closed");
         } else {
           setLightboxPhase("closing");
         }
-      }
-      if (event.key === "ArrowRight") {
+      } else if (event.key === "Tab") {
+        const focusable = dialogRef.current?.querySelectorAll(
+          'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+        );
+        if (!focusable?.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      } else if (event.key === "ArrowRight") {
         setSelectedImage((index) => (index + 1) % GALLERY_IMAGES.length);
-      }
-      if (event.key === "ArrowLeft") {
+      } else if (event.key === "ArrowLeft") {
         setSelectedImage(
           (index) =>
             (index - 1 + GALLERY_IMAGES.length) % GALLERY_IMAGES.length,
@@ -1173,6 +1885,16 @@ function GallerySection() {
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [selectedImage, lightboxPhase, prefersReducedMotion]);
+
+  useEffect(() => {
+    if (selectedImage !== null) {
+      closeButtonRef.current?.focus();
+      return;
+    }
+    if (!restoreFocusRef.current) return;
+    restoreFocusRef.current = false;
+    openerRef.current?.focus();
+  }, [selectedImage]);
 
   useEffect(() => {
     if (selectedImage === null || lightboxPhase !== "enter") return;
@@ -1228,43 +1950,45 @@ function GallerySection() {
   return (
     <section
       id="gallery"
-      className="bg-[linear-gradient(180deg,#f5f7fa,#e8edf2)] px-4 py-18 md:px-6"
+      className="bg-[linear-gradient(180deg,#f5f7fa,#e8edf2)] px-4 py-12 md:px-6 md:py-18"
     >
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           kicker="Photo Gallery"
-          title="A closer look at the shop, the process, and the work environment."
-          body="These photos give a closer look at the people, spaces, and repair stages that shape the work done every day at Nu Finish."
+          title="A closer look at the shop and repair work."
+          body="These photos show the people, work areas, and repair steps at Nu Finish."
           dark={false}
         />
 
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-3">
           {GALLERY_IMAGES.map(
-            ({ src, alt, title, caption, layout, frame }, index) => (
+            ({ src, alt, title, caption, featured, focus }, index) => (
               <figure
                 key={src}
                 data-reveal={index % 2 === 0 ? "left" : "right"}
-                className={`group overflow-hidden rounded-[30px] border border-black/[8%] bg-white shadow-[0_18px_55px_rgba(15,23,42,0.08)] ${layout ?? ""}`}
+                className={`group overflow-hidden rounded-[22px] border border-black/[8%] bg-white shadow-[0_18px_55px_rgba(15,23,42,0.08)] sm:rounded-[30px] ${index >= 6 && !showAllPhotos ? "max-sm:hidden" : ""} ${featured ? "xl:col-span-3" : ""}`}
                 style={motionDelay(index * 80)}
               >
                 <button
                   type="button"
-                  onClick={() => openImage(index)}
-                  className={`relative block w-full cursor-zoom-in overflow-hidden text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/45 ${frame ?? "aspect-[4/3]"}`}
+                  onClick={(event) => openImage(index, event)}
+                  className={`relative block w-full cursor-zoom-in overflow-hidden text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/45 ${featured ? "aspect-[4/3] xl:aspect-[21/9]" : "aspect-[4/3]"}`}
                   aria-label={`Open ${title} photo`}
                 >
                   <img
                     src={src}
                     alt={alt}
                     loading="lazy"
+                    decoding="async"
                     className="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.04]"
+                    style={focus ? { objectPosition: focus } : undefined}
                   />
                 </button>
-                <figcaption className="border-t border-black/[6%] px-5 py-4">
+                <figcaption className="border-t border-black/[6%] px-3 py-3 sm:px-5 sm:py-4">
                   <p className="text-[11px] font-black uppercase tracking-[0.2em] text-brand-ink">
                     {title}
                   </p>
-                  <p className="mt-2 text-sm leading-7 text-slate-600">
+                  <p className="mt-2 hidden text-sm leading-7 text-slate-600 sm:block">
                     {caption}
                   </p>
                 </figcaption>
@@ -1273,8 +1997,18 @@ function GallerySection() {
           )}
         </div>
 
+        <button
+          type="button"
+          onClick={() => setShowAllPhotos((value) => !value)}
+          className="mt-5 inline-flex min-h-11 items-center rounded-full border border-slate-300 bg-white px-5 text-sm font-bold text-slate-900 sm:hidden"
+          aria-expanded={showAllPhotos}
+        >
+          {showAllPhotos ? "Show fewer photos" : "Show all photos"}
+        </button>
+
         {activeImage ? (
           <div
+            ref={dialogRef}
             className={`fixed inset-0 z-[90] bg-slate-950/[88%] p-4 backdrop-blur-sm transition-opacity duration-200 md:p-8 ${lightboxPhase === "enter" || lightboxPhase === "closing" ? "opacity-0" : "opacity-100"}`}
             role="dialog"
             aria-modal="true"
@@ -1286,6 +2020,7 @@ function GallerySection() {
               onClick={(event) => event.stopPropagation()}
             >
               <button
+                ref={closeButtonRef}
                 type="button"
                 onClick={closeLightbox}
                 className="absolute right-5 top-5 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/35 text-white transition hover:bg-black/55 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/45"
@@ -1345,14 +2080,17 @@ function GallerySection() {
 
 function TestimonialsSection() {
   return (
-    <section className="bg-black px-4 py-18 text-white md:px-6">
+    <section
+      id="reviews"
+      className="bg-black px-4 py-12 text-white md:px-6 md:py-18"
+    >
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           kicker="Customer Confidence"
-          title="The strongest proof is still the finished vehicle and the customer experience around it."
+          title="What one customer said about the repair experience."
           align="center"
         />
-        <div className="mt-10 grid gap-5 lg:grid-cols-2">
+        <div className="mx-auto mt-10 grid max-w-3xl gap-5">
           {TESTIMONIALS.map(({ quote, by }, index) => (
             <article
               key={quote}
@@ -1377,19 +2115,18 @@ function TestimonialsSection() {
 
 function ContactSection() {
   return (
-    <section id="contact" className="bg-white px-4 py-18 md:px-6">
+    <section id="contact" className="bg-white px-4 py-12 md:px-6 md:py-18">
       <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1fr_0.9fr]">
         <div className="rounded-[32px] bg-slate-950 p-8 text-white md:p-10">
           <p className="text-[11px] uppercase tracking-[0.28em] text-brand">
-            Contact & Intake
+            Contact
           </p>
           <h2 className="mt-4 text-3xl font-black leading-tight md:text-4xl">
-            Call first, stop in, and let the shop guide the process from there.
+            Call us or stop by. We'll take it from there.
           </h2>
           <p className="mt-5 max-w-2xl text-sm leading-8 text-slate-300">
-            Whether you are working through an insurance claim or paying for a
-            repair directly, the team will walk you through the process and help
-            you understand what comes next.
+            Whether insurance is involved or you are paying directly, we will
+            explain the estimate, approval, and repair steps.
           </p>
 
           <div className="mt-8 grid gap-4 md:grid-cols-3">
@@ -1403,7 +2140,16 @@ function ContactSection() {
                 <p className="mt-3 text-xs font-black uppercase tracking-[0.18em] text-slate-400">
                   {label}
                 </p>
-                <p className="mt-2 text-sm leading-7 text-white">{value}</p>
+                {label === "Call" ? (
+                  <a
+                    href={PHONE_HREF}
+                    className="mt-2 inline-flex text-sm leading-7 text-white hover:underline"
+                  >
+                    {value}
+                  </a>
+                ) : (
+                  <p className="mt-2 text-sm leading-7 text-white">{value}</p>
+                )}
               </div>
             ))}
           </div>
@@ -1417,9 +2163,9 @@ function ContactSection() {
           </p>
           <div className="mt-5 space-y-5 text-sm leading-7 text-slate-600">
             {[
-              "Insurance customers should have claim details available when calling or visiting the shop.",
-              "Customer-pay clients follow the same repair path, but estimate approval comes directly from the customer.",
-              "If your vehicle is not drivable, call the shop so the team can explain the best next step for getting the repair process started.",
+              "Using insurance? Have your claim number and insurance company name handy.",
+              "Paying yourself? Same steps. You approve the estimate.",
+              "Car can't be driven? Call us first and we'll tell you your options.",
             ].map((item, index) => (
               <div
                 key={item}
@@ -1437,8 +2183,8 @@ function ContactSection() {
           <a
             href={MAP_HREF}
             target="_blank"
-            rel="noreferrer"
-            className="mt-8 inline-flex items-center gap-2 text-sm font-black text-brand-ink hover:underline"
+            rel="noopener noreferrer"
+            className="mt-6 inline-flex min-h-11 items-center gap-2 py-2 text-sm font-black text-brand-ink hover:underline"
           >
             Open directions in Google Maps
             <ChevronRight className="h-4 w-4" />
@@ -1465,14 +2211,13 @@ function Footer() {
       <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-[1.1fr_0.9fr_0.9fr]">
         <div>
           <img
-            src="/nufinish-logo.png"
+            src="/nufinish-logo-192.webp"
             alt="Nu Finish Collision Center badge"
             className="h-24 w-24 object-contain drop-shadow-[0_14px_34px_rgba(0,0,0,0.3)]"
           />
           <p className="mt-4 max-w-sm text-sm leading-7 text-slate-400">
-            Our mission is to restore every vehicle with precision, communicate
-            clearly at every step, and deliver repairs customers can trust from
-            intake to pickup.
+            Collision repair, painting, and clear updates from the first call
+            through pickup.
           </p>
         </div>
 
@@ -1485,7 +2230,7 @@ function Footer() {
               <a
                 key={id}
                 href={`#${id}`}
-                className="block text-sm text-slate-400 transition hover:text-white"
+                className="flex min-h-11 items-center py-2 text-sm text-slate-400 transition hover:text-white"
               >
                 {label}
               </a>
@@ -1499,7 +2244,11 @@ function Footer() {
           </p>
           <div className="mt-4 space-y-2 text-sm leading-7 text-slate-400">
             <p>{ADDRESS}</p>
-            <p>{PHONE_DISPLAY}</p>
+            <p>
+              <a href={PHONE_HREF} className="hover:text-white hover:underline">
+                {PHONE_DISPLAY}
+              </a>
+            </p>
             <p>Mon-Fri 9:00 AM-5:00 PM</p>
           </div>
         </div>
@@ -1507,7 +2256,7 @@ function Footer() {
 
       <div className="mx-auto mt-8 max-w-6xl border-t border-white/10 pt-6 text-xs text-slate-500">
         © {new Date().getFullYear()} Nu Finish Collision Center. Serving Garrett
-        County with collision repair, refinishing, and customer care.
+        County with collision repair, refinishing, and customer-focused care.
       </div>
     </footer>
   );
@@ -1541,19 +2290,25 @@ function FloatingCallButton() {
 export default function NuFinishSite() {
   useRevealObserver();
   return (
-    <div className="theme-shell min-h-screen bg-white text-slate-950">
+    <div className="theme-shell min-h-screen overflow-x-clip bg-white text-slate-950">
+      <a className="skip-link" href="#main">
+        Skip to content
+      </a>
       <ScrollProgress />
       <Navbar />
-      <Hero />
-      <TrustBar />
-      <ServicesSection />
-      <ProcessSection />
-      <AboutSection />
-      <FacilitySection />
-      <GallerySection />
-      <TestimonialsSection />
-      <OwnerSpotlightSection />
-      <ContactSection />
+      <main id="main">
+        <Hero />
+        <TrustBar />
+        <ServicesSection />
+        <ProcessSection />
+        <BeforeAfterSection />
+        <AboutSection />
+        <FacilitySection />
+        <GallerySection />
+        <TestimonialsSection />
+        <OwnerSpotlightSection />
+        <ContactSection />
+      </main>
       <Footer />
       <FloatingCallButton />
     </div>
