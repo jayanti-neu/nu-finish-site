@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 const PHONE_DISPLAY = "(301) 334-4727";
-const PHONE_HREF = "tel:3013344727";
+const PHONE_HREF = "tel:+13013344727";
 const ADDRESS = "1470 Maryland Highway, Oakland, MD 21550";
 const MAP_HREF =
   "https://www.google.com/maps/search/?api=1&query=1470+Maryland+Highway+Oakland+MD+21550";
@@ -583,7 +583,9 @@ function SectionHeading({ kicker, title, body, align = "left", dark = true }) {
       className={`${center ? "mx-auto max-w-2xl text-center" : "max-w-2xl"} motion-enter`}
       style={motionDelay(80)}
     >
-      <p className="mb-3 text-[11px] font-black uppercase tracking-[0.28em] text-brand">
+      <p
+        className={`mb-3 text-[11px] font-black uppercase tracking-[0.28em] text-brand ${dark ? "" : "text-brand-ink"}`}
+      >
         {kicker}
       </p>
       <h2
@@ -625,13 +627,27 @@ function CTAGroup({ compact = false, dark = true }) {
 
 function Navbar() {
   const [open, setOpen] = useState(false);
+  const menuButtonRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const onKeyDown = (event) => {
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      menuButtonRef.current?.focus();
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open]);
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-black/85 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6">
         <a
           href="#top"
-          className="flex items-center gap-3"
+          className="flex shrink-0 items-center gap-3"
           aria-label="Nu Finish home"
         >
           <img
@@ -641,12 +657,12 @@ function Navbar() {
           />
         </a>
 
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav aria-label="Primary" className="hidden items-center gap-1 md:flex">
           {NAV.map(([id, label]) => (
             <a
               key={id}
               href={`#${id}`}
-              className="nav-link whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold text-slate-200 transition hover:text-white lg:px-4"
+              className="nav-link whitespace-nowrap rounded-full px-2 py-2 text-sm font-semibold text-slate-200 transition hover:text-white lg:px-4"
             >
               {label}
             </a>
@@ -660,18 +676,22 @@ function Navbar() {
         </nav>
 
         <button
+          ref={menuButtonRef}
           type="button"
           onClick={() => setOpen((value) => !value)}
           className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-white md:hidden"
           aria-expanded={open}
-          aria-label="Toggle navigation"
+          aria-controls="mobile-nav"
         >
-          Menu
+          {open ? "Close" : "Menu"}
         </button>
       </div>
 
       {open ? (
-        <div className="border-t border-white/10 px-4 pb-4 md:hidden">
+        <div
+          id="mobile-nav"
+          className="border-t border-white/10 px-4 pb-4 md:hidden"
+        >
           <div className="flex flex-col gap-2 pt-3">
             {NAV.map(([id, label]) => (
               <a
@@ -953,14 +973,16 @@ function ProcessSection() {
                 </video>
               </>
             )}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/40 to-transparent" />
-            <div className="absolute inset-0 flex items-end p-5 md:p-7">
-              <p className="max-w-2xl text-sm font-semibold leading-7 text-slate-100 md:text-base">
-                This paint-color-blend clip shows controlled transition work,
-                where color is matched and blended before final clear.
+            <div className="absolute inset-0 hidden bg-gradient-to-t from-black/90 via-black/55 to-transparent md:block" />
+            <div className="absolute inset-0 flex items-end p-7 max-md:hidden">
+              <p className="max-w-2xl text-base font-semibold leading-7 text-white">
+                Color matching and blending before the final clear coat.
               </p>
             </div>
           </div>
+          <p className="bg-slate-950 px-5 py-4 text-sm font-semibold leading-7 text-white md:hidden">
+            Color matching and blending before the final clear coat.
+          </p>
         </div>
 
         <div className="mt-10 grid gap-4 lg:grid-cols-5">
@@ -1133,10 +1155,9 @@ function AboutSection() {
               and work that supports both insurance and customer-pay clients.
             </p>
             <p className="mt-4 text-sm leading-7 text-slate-300">
-              John "Grover" Groves is the owner presented on the public site,
-              and the team keeps customer-facing communication current so
-              estimate, certification, and warranty information is clear from
-              the first conversation.
+              John "Grover" Groves owns and runs Nu Finish today. The team keeps
+              estimate, certification, and warranty information clear from the
+              first conversation.
             </p>
           </div>
         </div>
@@ -1236,17 +1257,23 @@ function OwnerSpotlightSection() {
                   </video>
                 </>
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-5 md:p-6">
-                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-brand">
+              <div className="absolute inset-0 hidden bg-gradient-to-t from-black/90 via-black/55 to-transparent md:block" />
+              <div className="absolute inset-x-0 bottom-0 hidden p-6 md:block">
+                <p className="inline-flex rounded-full bg-black/80 px-3 py-1 text-[11px] font-black uppercase tracking-[0.24em] text-brand">
                   John Groves · Owner Spotlight
                 </p>
                 <p className="mt-2 max-w-2xl text-sm leading-7 text-white/90">
-                  This motorsports-legacy clip reflects John's personal
-                  background in local racing, separate from Nu Finish's repair
-                  services and day-to-day production work.
+                  John on track with his race car.
                 </p>
               </div>
+            </div>
+            <div className="border-t border-white/10 bg-black px-5 py-4 md:hidden">
+              <p className="inline-flex rounded-full bg-slate-900 px-3 py-1 text-[11px] font-black uppercase tracking-[0.24em] text-brand">
+                John Groves · Owner Spotlight
+              </p>
+              <p className="mt-2 text-sm leading-7 text-white">
+                John on track with his race car.
+              </p>
             </div>
           </div>
 
@@ -1269,11 +1296,6 @@ function OwnerSpotlightSection() {
                 through delivery.
               </p>
               <p>
-                Featuring this part of John's life provides context about the
-                owner behind the business and his long-standing presence in
-                Garrett County.
-              </p>
-              <p>
                 The mission does not change: quality workmanship, dependable
                 timelines, and a finished vehicle customers can leave with
                 confidence.
@@ -1289,7 +1311,7 @@ function OwnerSpotlightSection() {
                 ],
                 [
                   "Race Day Background",
-                  "Additional race-day visuals provide personal background on the owner while Nu Finish remains focused on collision repair and refinishing.",
+                  "Race day.",
                   VIDEO_ASSETS.ownerRace,
                 ],
               ].map(([title, caption, asset]) => (
@@ -1396,14 +1418,16 @@ function FacilitySection() {
                 </video>
               </>
             )}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
-            <div className="absolute inset-0 flex items-end p-5 md:p-6">
-              <p className="max-w-2xl text-sm font-semibold leading-7 text-slate-100 md:text-base">
-                This clear-coat-booth clip highlights controlled airflow and
-                booth conditions used during final finish stages.
+            <div className="absolute inset-0 hidden bg-gradient-to-t from-black/90 via-black/55 to-transparent md:block" />
+            <div className="absolute inset-0 flex items-end p-6 max-md:hidden">
+              <p className="max-w-2xl text-base font-semibold leading-7 text-white">
+                Final coats are applied in an enclosed paint booth.
               </p>
             </div>
           </div>
+          <p className="bg-slate-950 px-5 py-4 text-sm font-semibold leading-7 text-white md:hidden">
+            Final coats are applied in an enclosed paint booth.
+          </p>
         </div>
 
         <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -1433,13 +1457,19 @@ function GallerySection() {
   const [lightboxPhase, setLightboxPhase] = useState("closed");
   const touchStartX = useRef(null);
   const touchStartY = useRef(null);
+  const dialogRef = useRef(null);
+  const closeButtonRef = useRef(null);
+  const openerRef = useRef(null);
+  const restoreFocusRef = useRef(false);
 
-  const openImage = (index) => {
+  const openImage = (index, event) => {
+    openerRef.current = event.currentTarget;
     setLightboxPhase(prefersReducedMotion ? "open" : "enter");
     setSelectedImage(index);
   };
   const closeLightbox = () => {
     if (selectedImage === null || lightboxPhase === "closing") return;
+    restoreFocusRef.current = true;
     if (prefersReducedMotion) {
       setSelectedImage(null);
       setLightboxPhase("closed");
@@ -1460,17 +1490,30 @@ function GallerySection() {
     const onKeyDown = (event) => {
       if (event.key === "Escape") {
         if (lightboxPhase === "closing") return;
+        restoreFocusRef.current = true;
         if (prefersReducedMotion) {
           setSelectedImage(null);
           setLightboxPhase("closed");
         } else {
           setLightboxPhase("closing");
         }
-      }
-      if (event.key === "ArrowRight") {
+      } else if (event.key === "Tab") {
+        const focusable = dialogRef.current?.querySelectorAll(
+          'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+        );
+        if (!focusable?.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      } else if (event.key === "ArrowRight") {
         setSelectedImage((index) => (index + 1) % GALLERY_IMAGES.length);
-      }
-      if (event.key === "ArrowLeft") {
+      } else if (event.key === "ArrowLeft") {
         setSelectedImage(
           (index) =>
             (index - 1 + GALLERY_IMAGES.length) % GALLERY_IMAGES.length,
@@ -1488,6 +1531,16 @@ function GallerySection() {
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [selectedImage, lightboxPhase, prefersReducedMotion]);
+
+  useEffect(() => {
+    if (selectedImage !== null) {
+      closeButtonRef.current?.focus();
+      return;
+    }
+    if (!restoreFocusRef.current) return;
+    restoreFocusRef.current = false;
+    openerRef.current?.focus();
+  }, [selectedImage]);
 
   useEffect(() => {
     if (selectedImage === null || lightboxPhase !== "enter") return;
@@ -1564,7 +1617,7 @@ function GallerySection() {
               >
                 <button
                   type="button"
-                  onClick={() => openImage(index)}
+                  onClick={(event) => openImage(index, event)}
                   className={`relative block w-full cursor-zoom-in overflow-hidden text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/45 ${frame ?? "aspect-[4/3]"}`}
                   aria-label={`Open ${title} photo`}
                 >
@@ -1590,6 +1643,7 @@ function GallerySection() {
 
         {activeImage ? (
           <div
+            ref={dialogRef}
             className={`fixed inset-0 z-[90] bg-slate-950/[88%] p-4 backdrop-blur-sm transition-opacity duration-200 md:p-8 ${lightboxPhase === "enter" || lightboxPhase === "closing" ? "opacity-0" : "opacity-100"}`}
             role="dialog"
             aria-modal="true"
@@ -1601,6 +1655,7 @@ function GallerySection() {
               onClick={(event) => event.stopPropagation()}
             >
               <button
+                ref={closeButtonRef}
                 type="button"
                 onClick={closeLightbox}
                 className="absolute right-5 top-5 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/35 text-white transition hover:bg-black/55 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/45"
@@ -1719,7 +1774,16 @@ function ContactSection() {
                 <p className="mt-3 text-xs font-black uppercase tracking-[0.18em] text-slate-400">
                   {label}
                 </p>
-                <p className="mt-2 text-sm leading-7 text-white">{value}</p>
+                {label === "Call" ? (
+                  <a
+                    href={PHONE_HREF}
+                    className="mt-2 inline-flex text-sm leading-7 text-white hover:underline"
+                  >
+                    {value}
+                  </a>
+                ) : (
+                  <p className="mt-2 text-sm leading-7 text-white">{value}</p>
+                )}
               </div>
             ))}
           </div>
@@ -1815,7 +1879,11 @@ function Footer() {
           </p>
           <div className="mt-4 space-y-2 text-sm leading-7 text-slate-400">
             <p>{ADDRESS}</p>
-            <p>{PHONE_DISPLAY}</p>
+            <p>
+              <a href={PHONE_HREF} className="hover:text-white hover:underline">
+                {PHONE_DISPLAY}
+              </a>
+            </p>
             <p>Mon-Fri 9:00 AM-5:00 PM</p>
           </div>
         </div>
@@ -1857,20 +1925,25 @@ function FloatingCallButton() {
 export default function NuFinishSite() {
   useRevealObserver();
   return (
-    <div className="theme-shell min-h-screen bg-white text-slate-950">
+    <div className="theme-shell min-h-screen overflow-x-clip bg-white text-slate-950">
+      <a className="skip-link" href="#main">
+        Skip to content
+      </a>
       <ScrollProgress />
       <Navbar />
-      <Hero />
-      <TrustBar />
-      <ServicesSection />
-      <ProcessSection />
-      <BeforeAfterSection />
-      <AboutSection />
-      <FacilitySection />
-      <GallerySection />
-      <TestimonialsSection />
-      <OwnerSpotlightSection />
-      <ContactSection />
+      <main id="main">
+        <Hero />
+        <TrustBar />
+        <ServicesSection />
+        <ProcessSection />
+        <BeforeAfterSection />
+        <AboutSection />
+        <FacilitySection />
+        <GallerySection />
+        <TestimonialsSection />
+        <OwnerSpotlightSection />
+        <ContactSection />
+      </main>
       <Footer />
       <FloatingCallButton />
     </div>
