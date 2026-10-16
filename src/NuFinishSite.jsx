@@ -872,7 +872,7 @@ function Hero() {
           src={VIDEO_ASSETS.hero.still}
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover opacity-60 lg:w-[140%] lg:max-w-none lg:object-left-top"
+          className="hero-storefront absolute inset-0 h-full w-full object-cover opacity-60"
         />
         <div
           className="shop-floor-overlay absolute inset-0"

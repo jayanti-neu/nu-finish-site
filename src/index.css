@@ -119,6 +119,24 @@ h3,
   letter-spacing: 0.015em;
 }
 
+@media (min-width: 64rem) {
+  .hero-storefront {
+    left: auto;
+    right: 0;
+    width: 64%;
+    max-width: none;
+    object-position: center 60%;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 26%);
+    mask-image: linear-gradient(to right, transparent 0%, black 26%);
+  }
+}
+
+@media (min-width: 80rem) {
+  .hero-storefront {
+    width: 78%;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --site-bg:
