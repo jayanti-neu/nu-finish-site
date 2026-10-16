@@ -973,27 +973,6 @@ function Hero() {
 
         <div className="hidden gap-4 self-end md:grid">
           <div
-            className="motion-card motion-float rounded-[28px] border border-white/10 bg-white/[6%] p-6 shadow-[0_20px_80px_rgba(0,0,0,0.35)] backdrop-blur"
-            style={motionDelay(160)}
-          >
-            <p className="text-[11px] uppercase tracking-[0.28em] text-slate-400">
-              At a glance
-            </p>
-            <dl className="mt-5 grid grid-cols-2 gap-4">
-              {HERO_FACTS.map(([value, label]) => (
-                <div key={label} className="rounded-2xl bg-black/35 p-4">
-                  <dt className="text-xs uppercase tracking-[0.16em] text-slate-400">
-                    {label}
-                  </dt>
-                  <dd className="mt-1 text-xl font-black text-white">
-                    {value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-
-          <div
             className="motion-card rounded-[28px] border border-brand/25 bg-brand/10 p-6 text-sm leading-7 text-slate-100"
             style={motionDelay(280)}
           >
