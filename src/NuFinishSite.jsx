@@ -613,7 +613,7 @@ function CTAGroup({ compact = false, dark = true }) {
       <a
         href={MAP_HREF}
         target="_blank"
-        rel="noreferrer"
+        rel="noopener noreferrer"
         className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition ${dark ? "border border-white/20 bg-white/5 text-white hover:bg-white/10" : "border border-slate-300 bg-white text-slate-900 hover:bg-slate-100"}`}
       >
         <MapPin className="h-4 w-4" />
